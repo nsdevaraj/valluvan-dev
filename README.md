@@ -15,3 +15,6 @@ Discover the timeless wisdom of Thirukkural with Valluvan, your comprehensive gu
 Valluvan provides a user-friendly platform to delve into the profound teachings of Thiruvalluvar. 
 
 Enhance your understanding of ethics, politics, and love through this beautifully crafted digital companion to one of the world's greatest works of literature.
+
+
+- modified databasemanager for sqllite reference
