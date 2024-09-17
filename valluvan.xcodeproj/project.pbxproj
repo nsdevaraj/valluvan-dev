@@ -1,0 +1,550 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FE0C64462C96FD4300364D06 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0C64432C96FD4300364D06 /* MainContentView.swift */; };
+		FE0C64472C96FD4300364D06 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0C64442C96FD4300364D06 /* BottomBarView.swift */; };
+		FE0C64482C96FD4300364D06 /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0C64452C96FD4300364D06 /* SearchBarView.swift */; };
+		FE624C112C92CCEC005195EC /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = FE624C102C92CCEC005195EC /* SQLite */; };
+		FE643BEF2C96D0380042676A /* ExplanationComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BEC2C96D0370042676A /* ExplanationComponents.swift */; };
+		FE643BF02C96D0380042676A /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BED2C96D0370042676A /* ExplanationView.swift */; };
+		FE643BF12C96D0380042676A /* ExplanationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BEE2C96D0380042676A /* ExplanationViewModel.swift */; };
+		FEBC786F2C96A5C800411700 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785B2C96A5C800411700 /* FavoritesView.swift */; };
+		FEBC78702C96A5C800411700 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785C2C96A5C800411700 /* NotificationManager.swift */; };
+		FEBC78712C96A5C800411700 /* PalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785D2C96A5C800411700 /* PalButton.swift */; };
+		FEBC78722C96A5C800411700 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEBC785E2C96A5C800411700 /* Launch Screen.storyboard */; };
+		FEBC78742C96A5C800411700 /* AdhigaramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78602C96A5C800411700 /* AdhigaramView.swift */; };
+		FEBC78752C96A5C800411700 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78612C96A5C800411700 /* AppDelegate.swift */; };
+		FEBC78762C96A5C800411700 /* GoToKuralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78622C96A5C800411700 /* GoToKuralView.swift */; };
+		FEBC78772C96A5C800411700 /* valluvanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78632C96A5C800411700 /* valluvanApp.swift */; };
+		FEBC78792C96A5C800411700 /* IyalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78652C96A5C800411700 /* IyalCard.swift */; };
+		FEBC787A2C96A5C800411700 /* LanguageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78662C96A5C800411700 /* LanguageSettingsView.swift */; };
+		FEBC787B2C96A5C800411700 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78672C96A5C800411700 /* DatabaseManager.swift */; };
+		FEBC787C2C96A5C800411700 /* IyalUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78682C96A5C800411700 /* IyalUtils.swift */; };
+		FEBC787E2C96A5C800411700 /* LinePairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC786A2C96A5C800411700 /* LinePairView.swift */; };
+		FEBC787F2C96A5C800411700 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC786B2C96A5C800411700 /* ShareSheet.swift */; };
+		FEBC78802C96A5C800411700 /* TranslationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC786C2C96A5C800411700 /* TranslationUtil.swift */; };
+		FEBC78812C96A5C800411700 /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC786D2C96A5C800411700 /* SearchResultsView.swift */; };
+		FEBC78842C96A6C900411700 /* LanguageUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC78832C96A6C900411700 /* LanguageUtil.swift */; };
+		FEC911FD2C956E7C00E6AE94 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC911FC2C956E7C00E6AE94 /* AppState.swift */; };
+		FECB70042C92F33E00989E70 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FECB6F762C92F33E00989E70 /* Preview Assets.xcassets */; };
+		FECB708A2C92F33E00989E70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FECB6FFE2C92F33E00989E70 /* Assets.xcassets */; };
+		FECB708B2C92F33E00989E70 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECB6FFF2C92F33E00989E70 /* ContentView.swift */; };
+		FECB708C2C92F33E00989E70 /* data.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = FECB70002C92F33E00989E70 /* data.sqlite */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FE0C64432C96FD4300364D06 /* MainContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
+		FE0C64442C96FD4300364D06 /* BottomBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomBarView.swift; sourceTree = "<group>"; };
+		FE0C64452C96FD4300364D06 /* SearchBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+		FE1B2D832C92C133006DBC55 /* Valluvan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Valluvan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE643BEC2C96D0370042676A /* ExplanationComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationComponents.swift; sourceTree = "<group>"; };
+		FE643BED2C96D0370042676A /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
+		FE643BEE2C96D0380042676A /* ExplanationViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationViewModel.swift; sourceTree = "<group>"; };
+		FE7D91122C95A78300A2E9A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = Valluvan/Info.plist; sourceTree = "<group>"; };
+		FEBC785B2C96A5C800411700 /* FavoritesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		FEBC785C2C96A5C800411700 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		FEBC785D2C96A5C800411700 /* PalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PalButton.swift; sourceTree = "<group>"; };
+		FEBC785E2C96A5C800411700 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		FEBC78602C96A5C800411700 /* AdhigaramView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdhigaramView.swift; sourceTree = "<group>"; };
+		FEBC78612C96A5C800411700 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FEBC78622C96A5C800411700 /* GoToKuralView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoToKuralView.swift; sourceTree = "<group>"; };
+		FEBC78632C96A5C800411700 /* valluvanApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = valluvanApp.swift; sourceTree = "<group>"; };
+		FEBC78652C96A5C800411700 /* IyalCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IyalCard.swift; sourceTree = "<group>"; };
+		FEBC78662C96A5C800411700 /* LanguageSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LanguageSettingsView.swift; sourceTree = "<group>"; };
+		FEBC78672C96A5C800411700 /* DatabaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		FEBC78682C96A5C800411700 /* IyalUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IyalUtils.swift; sourceTree = "<group>"; };
+		FEBC786A2C96A5C800411700 /* LinePairView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinePairView.swift; sourceTree = "<group>"; };
+		FEBC786B2C96A5C800411700 /* ShareSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		FEBC786C2C96A5C800411700 /* TranslationUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslationUtil.swift; sourceTree = "<group>"; };
+		FEBC786D2C96A5C800411700 /* SearchResultsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
+		FEBC78832C96A6C900411700 /* LanguageUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LanguageUtil.swift; sourceTree = "<group>"; };
+		FEBC78872C96C75900411700 /* GoToKural.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = GoToKural.intentdefinition; sourceTree = "<group>"; };
+		FEBC78882C96C9AF00411700 /* Valluvan.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Valluvan.entitlements; path = Valluvan/Valluvan.entitlements; sourceTree = "<group>"; };
+		FEC0795F2C96E00F00230ABE /* Valluvan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Valluvan.xctestplan; sourceTree = "<group>"; };
+		FEC911FC2C956E7C00E6AE94 /* AppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppState.swift; path = valluvan/Launch/AppState.swift; sourceTree = SOURCE_ROOT; };
+		FECB6F762C92F33E00989E70 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FECB6FFE2C92F33E00989E70 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FECB6FFF2C92F33E00989E70 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FECB70002C92F33E00989E70 /* data.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = data.sqlite; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FE1B2D802C92C133006DBC55 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE624C112C92CCEC005195EC /* SQLite in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FE1B2D7A2C92C133006DBC55 = {
+			isa = PBXGroup;
+			children = (
+				FEC0795F2C96E00F00230ABE /* Valluvan.xctestplan */,
+				FEBC78882C96C9AF00411700 /* Valluvan.entitlements */,
+				FEBC78872C96C75900411700 /* GoToKural.intentdefinition */,
+				FE7D91122C95A78300A2E9A0 /* Info.plist */,
+				FECB70032C92F33E00989E70 /* valluvan */,
+				FE1B2D842C92C133006DBC55 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FE1B2D842C92C133006DBC55 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE1B2D832C92C133006DBC55 /* Valluvan.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FE5EEAF82C981F7F00F23A5F /* Launch */ = {
+			isa = PBXGroup;
+			children = (
+				FEC911FC2C956E7C00E6AE94 /* AppState.swift */,
+				FEBC78612C96A5C800411700 /* AppDelegate.swift */,
+				FECB6FFF2C92F33E00989E70 /* ContentView.swift */,
+				FE0C64432C96FD4300364D06 /* MainContentView.swift */,
+				FEBC785D2C96A5C800411700 /* PalButton.swift */,
+				FEBC78632C96A5C800411700 /* valluvanApp.swift */,
+				FEBC785E2C96A5C800411700 /* Launch Screen.storyboard */,
+			);
+			path = Launch;
+			sourceTree = "<group>";
+		};
+		FE5EEAF92C981FB600F23A5F /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				FEBC786D2C96A5C800411700 /* SearchResultsView.swift */,
+				FEBC786B2C96A5C800411700 /* ShareSheet.swift */,
+				FE0C64452C96FD4300364D06 /* SearchBarView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		FE5EEAFA2C98205D00F23A5F /* Explanation */ = {
+			isa = PBXGroup;
+			children = (
+				FE643BED2C96D0370042676A /* ExplanationView.swift */,
+				FE643BEE2C96D0380042676A /* ExplanationViewModel.swift */,
+				FE643BEC2C96D0370042676A /* ExplanationComponents.swift */,
+			);
+			path = Explanation;
+			sourceTree = "<group>";
+		};
+		FE5EEAFB2C98208F00F23A5F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				FEBC78832C96A6C900411700 /* LanguageUtil.swift */,
+				FEBC78682C96A5C800411700 /* IyalUtils.swift */,
+				FEBC786C2C96A5C800411700 /* TranslationUtil.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		FE5EEAFC2C9820A800F23A5F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FEBC78602C96A5C800411700 /* AdhigaramView.swift */,
+				FE0C64442C96FD4300364D06 /* BottomBarView.swift */,
+				FEBC785B2C96A5C800411700 /* FavoritesView.swift */,
+				FEBC78622C96A5C800411700 /* GoToKuralView.swift */,
+				FEBC78652C96A5C800411700 /* IyalCard.swift */,
+				FEBC786A2C96A5C800411700 /* LinePairView.swift */,
+				FEBC78662C96A5C800411700 /* LanguageSettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FE5EEAFD2C9820D200F23A5F /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				FEBC78672C96A5C800411700 /* DatabaseManager.swift */,
+				FEBC785C2C96A5C800411700 /* NotificationManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		FECB6F772C92F33E00989E70 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				FECB6F762C92F33E00989E70 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FECB70032C92F33E00989E70 /* valluvan */ = {
+			isa = PBXGroup;
+			children = (
+				FECB6F772C92F33E00989E70 /* Preview Content */,
+				FECB6FFE2C92F33E00989E70 /* Assets.xcassets */,
+				FECB70002C92F33E00989E70 /* data.sqlite */,
+				FE5EEAF92C981FB600F23A5F /* Search */,
+				FE5EEAF82C981F7F00F23A5F /* Launch */,
+				FE5EEAFA2C98205D00F23A5F /* Explanation */,
+				FE5EEAFD2C9820D200F23A5F /* Managers */,
+				FE5EEAFC2C9820A800F23A5F /* Views */,
+				FE5EEAFB2C98208F00F23A5F /* Utils */,
+			);
+			path = valluvan;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FE1B2D822C92C133006DBC55 /* Valluvan */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE1B2D912C92C136006DBC55 /* Build configuration list for PBXNativeTarget "Valluvan" */;
+			buildPhases = (
+				FE1B2D7F2C92C133006DBC55 /* Sources */,
+				FE1B2D802C92C133006DBC55 /* Frameworks */,
+				FE1B2D812C92C133006DBC55 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Valluvan;
+			packageProductDependencies = (
+				FE624C102C92CCEC005195EC /* SQLite */,
+			);
+			productName = valluvan;
+			productReference = FE1B2D832C92C133006DBC55 /* Valluvan.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FE1B2D7B2C92C133006DBC55 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					FE1B2D822C92C133006DBC55 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = FE1B2D7E2C92C133006DBC55 /* Build configuration list for PBXProject "valluvan" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FE1B2D7A2C92C133006DBC55;
+			packageReferences = (
+				FE624C0F2C92CCEC005195EC /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+			);
+			productRefGroup = FE1B2D842C92C133006DBC55 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FE1B2D822C92C133006DBC55 /* Valluvan */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FE1B2D812C92C133006DBC55 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FECB70042C92F33E00989E70 /* Preview Assets.xcassets in Resources */,
+				FECB708C2C92F33E00989E70 /* data.sqlite in Resources */,
+				FECB708A2C92F33E00989E70 /* Assets.xcassets in Resources */,
+				FEBC78722C96A5C800411700 /* Launch Screen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FE1B2D7F2C92C133006DBC55 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FEBC78792C96A5C800411700 /* IyalCard.swift in Sources */,
+				FEBC78712C96A5C800411700 /* PalButton.swift in Sources */,
+				FEBC787E2C96A5C800411700 /* LinePairView.swift in Sources */,
+				FEBC78752C96A5C800411700 /* AppDelegate.swift in Sources */,
+				FEBC78842C96A6C900411700 /* LanguageUtil.swift in Sources */,
+				FE643BF02C96D0380042676A /* ExplanationView.swift in Sources */,
+				FEBC787F2C96A5C800411700 /* ShareSheet.swift in Sources */,
+				FE643BEF2C96D0380042676A /* ExplanationComponents.swift in Sources */,
+				FE0C64462C96FD4300364D06 /* MainContentView.swift in Sources */,
+				FEBC78702C96A5C800411700 /* NotificationManager.swift in Sources */,
+				FEBC78772C96A5C800411700 /* valluvanApp.swift in Sources */,
+				FE0C64472C96FD4300364D06 /* BottomBarView.swift in Sources */,
+				FEBC78742C96A5C800411700 /* AdhigaramView.swift in Sources */,
+				FEBC787C2C96A5C800411700 /* IyalUtils.swift in Sources */,
+				FEBC787B2C96A5C800411700 /* DatabaseManager.swift in Sources */,
+				FEBC78812C96A5C800411700 /* SearchResultsView.swift in Sources */,
+				FE643BF12C96D0380042676A /* ExplanationViewModel.swift in Sources */,
+				FEBC78802C96A5C800411700 /* TranslationUtil.swift in Sources */,
+				FECB708B2C92F33E00989E70 /* ContentView.swift in Sources */,
+				FEBC78762C96A5C800411700 /* GoToKuralView.swift in Sources */,
+				FEC911FD2C956E7C00E6AE94 /* AppState.swift in Sources */,
+				FEBC787A2C96A5C800411700 /* LanguageSettingsView.swift in Sources */,
+				FE0C64482C96FD4300364D06 /* SearchBarView.swift in Sources */,
+				FEBC786F2C96A5C800411700 /* FavoritesView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FE1B2D8F2C92C136006DBC55 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FE1B2D902C92C136006DBC55 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FE1B2D922C92C136006DBC55 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Valluvan/Valluvan.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "valluvan/Preview\\ Content";
+				DEVELOPMENT_TEAM = 8CV34TZC4L;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Valluvan/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Valluvan;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nsdevaraj.valluvan;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FE1B2D932C92C136006DBC55 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Valluvan/Valluvan.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "valluvan/Preview\\ Content";
+				DEVELOPMENT_TEAM = 8CV34TZC4L;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Valluvan/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Valluvan;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nsdevaraj.valluvan;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FE1B2D7E2C92C133006DBC55 /* Build configuration list for PBXProject "valluvan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE1B2D8F2C92C136006DBC55 /* Debug */,
+				FE1B2D902C92C136006DBC55 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE1B2D912C92C136006DBC55 /* Build configuration list for PBXNativeTarget "Valluvan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE1B2D922C92C136006DBC55 /* Debug */,
+				FE1B2D932C92C136006DBC55 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FE624C0F2C92CCEC005195EC /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FE624C102C92CCEC005195EC /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FE624C0F2C92CCEC005195EC /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FE1B2D7B2C92C133006DBC55 /* Project object */;
+}
