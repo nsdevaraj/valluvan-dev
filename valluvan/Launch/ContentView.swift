@@ -116,9 +116,7 @@ struct ContentView: View {
         }
         .preferredColorScheme(isDarkMode ? .dark : .light)
         .environment(\.sizeCategory, appState.fontSize.textSizeCategory)
-        .onAppear {
-            onAppearActions()
-        }
+        .onAppear(perform: onAppearActions)
         .onChange(of: selectedPal) { oldValue, newValue in
             Task {
                 await loadIyals()
@@ -134,29 +132,20 @@ struct ContentView: View {
                 shouldNavigateToContentView = false
             }
         }
-        .sheet(isPresented: $isShowingSearchResults) {
-            if isSearchResultsReady {
-                searchResultsSheet()
-            } else {
-                ProgressView("Loading results...")
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.isSearchResultsReady = true
-                        }
-                    }
-            }
-        }
+        .sheet(isPresented: $isShowingSearchResults, content: searchResultsSheet)
         .sheet(item: $selectedSearchResult, content: explanationSheet)
         .sheet(isPresented: $showFavorites, content: favoritesSheet)
         .sheet(isPresented: $showGoToKural, content: goToKuralSheet)
         .sheet(isPresented: $showLanguageSettings, content: languageSettingsSheet)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { notification in
             Task {
-                await handleNotification()
+                await handleAppBecomeActive()
             }
         }
         .sheet(isPresented: $showExplanationView, content: explanationViewSheet)
-        .task(loadIyalsTask)
+        .task {
+            await loadIyalsTask()
+        }
     }
 
     private func getCurrentTitle(_ index: Int) -> String {
@@ -195,13 +184,6 @@ struct ContentView: View {
             selectedPal = getCurrentTitle(index)
         } else {
             selectedPal = getCurrentTitle(0)
-        }
-    }
-    
-    private func loadIyals() async {
-        let newIyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
-        DispatchQueue.main.async {
-            self.iyals = newIyals
         }
     }
     
@@ -468,8 +450,7 @@ struct ContentView: View {
         setupSiriShortcut()
     }
 
-    @Sendable
-    private func handleNotification() async {
+    private func handleAppBecomeActive() async {
         if let kuralId = notificationKuralId.wrappedValue {
             if let result = await DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
                 await MainActor.run {
@@ -483,8 +464,13 @@ struct ContentView: View {
         }
     }
 
+    @Sendable
     private func loadIyalsTask() async {
         await loadIyals()
+    }
+
+    private func loadIyals() async { 
+        iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
     }
 }
  
