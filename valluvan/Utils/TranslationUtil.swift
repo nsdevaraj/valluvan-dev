@@ -309,7 +309,13 @@ class TranslationUtil {
                 "The worth of a wife": "భార్య యొక్క విలువ",
                 "Truth consciousness": "సత్య సంబంధిత అవగాహన",
                 "Unforgetfulness": "మర్చిపోకపోవడం",
-                "Veracity": "సత్యత"
+                "Veracity": "సత్యత",
+                "Wailing of pining love": "ప్రేమ యొక్క కలల వాపసు",
+                "Wailing over pallor": "పలరాల యొక్క కలల వాపసు",
+                "Walk with kings": "కింగ్స్ కి పాల్గాలు",
+                "Wanton women": "కారాలాగారులు",
+                "Wasteful look for wistful love": "కలల ప్రేమకు విస్మారులు",
+                "Way of making wealth": "ధనం చేయడానికి మార్గం"
             ],
              "hindi": [
                 "Abstinence from flesh": "मांस का परित्याग",
@@ -438,7 +444,13 @@ class TranslationUtil {
                 "The worth of a wife": "पत्नी का मूल्य",
                 "Truth consciousness": "सत्य चेतना",
                 "Unforgetfulness": "अविस्मरणीयता",
-                "Veracity": "सत्यता"
+                "Veracity": "सत्यता",
+                "Wailing of pining love": "प्रेम की दुःख की गुस्सावानी",
+                "Wailing over pallor": "पलर के बारे में गुस्सावानी",
+                "Walk with kings": "शऐद के साथ चलना",
+                "Wanton women": "बेचैन महिलाएं",
+                "Wasteful look for wistful love": "दुःख के प्रेम के लिए विस्मारक दृष्टि",
+                "Way of making wealth": "धन बनाने का रास्ता"
             ],
             "kannad": [ 
                 "Abstinence from flesh": "ಮಾಂಸ ತ್ಯಾಗ",
@@ -567,7 +579,13 @@ class TranslationUtil {
                 "The worth of a wife": "ಹೆಂಡತಿಯ ಮೌಲ್ಯ",
                 "Truth consciousness": "ಸತ್ಯದ ಅರಿವು",
                 "Unforgetfulness": "ಮರೆತಿರದಿರುವುದು",
-                "Veracity": "ಸತ್ಯತೆ"
+                "Veracity": "ಸತ್ಯತೆ",
+                "Wailing of pining love": "ಪ್ರೇಮದ ದುಃಖದ ಗುಸ್ಸಾವಾನಿ",
+                "Wailing over pallor": "ಪಲರ ಬಗ್ಗೆ ಗುಸ್ಸಾವಾನಿ",
+                "Walk with kings": "ಶऐದ ಕೇಳಿರಿ",
+                "Wanton women": "ಬೆಚೆನ ಮಹಿಳಾರು",
+                "Wasteful look for wistful love": "ದುಃಖ ಕೇ ಪ್ರೇಮದ ಲಿಕ್ಕಾಗಿ ವಿಸ್ಮಾರಕ ನೋಟ",
+                "Way of making wealth": "ಧನ ಬನಾಟಿಸುವ ರಾಸ್ತೆ"
             ],
             "french": [ 
                 "Abstinence from flesh": "Abstinence de la chair",
@@ -696,7 +714,13 @@ class TranslationUtil {
                 "The worth of a wife": "La valeur d'une femme",
                 "Truth consciousness": "Conscience de la vérité",
                 "Unforgetfulness": "Inoubli",
-                "Veracity": "Véracité"
+                "Veracity": "Véracité",
+                "Wailing of pining love": "Lamentation d'un amour languissant",
+                "Wailing over pallor": "Lamentation sur la pâleur",
+                "Walk with kings": "Marcher avec les rois",
+                "Wanton women": "Femmes frivoles",
+                "Wasteful look for wistful love": "Regard vain pour un amour mélancolique",
+                "Way of making wealth": "Façon de faire fortune"
             ],
             "arabic": [ 
                 "Abstinence from flesh": "امتناع عن اللحم",
@@ -825,7 +849,13 @@ class TranslationUtil {
                 "The worth of a wife": "قيمة الزوجة",
                 "Truth consciousness": "وعي الحقيقة",
                 "Unforgetfulness": "عدم النسيان",
-                "Veracity": "الصدق"
+                "Veracity": "الصدق",
+                "Wailing of pining love": "نواح الحب المشتاق",
+                "Wailing over pallor": "النواح على الشحوب",
+                "Walk with kings": "المشي مع الملوك",
+                "Wanton women": "النساء الفاجرات",
+                "Wasteful look for wistful love": "نظرة مهدرة للحب الحزين",
+                "Way of making wealth": "طريقة صنع الثروة"
             ],
             "chinese": [ 
                 "Abstinence from flesh": "戒肉",
@@ -954,7 +984,13 @@ class TranslationUtil {
                 "The worth of a wife": "妻子的价值",
                 "Truth consciousness": "真理意识",
                 "Unforgetfulness": "不忘",
-                "Veracity": "真实"
+                "Veracity": "真实",
+                "Wailing of pining love": "相思之苦的哀叹",
+                "Wailing over pallor": "苍白之上的哀叹",
+                "Walk with kings": "与国王同行",
+                "Wanton women": "放荡的女人",
+                "Wasteful look for wistful love": "为哀伤的爱情而浪费的目光",
+                "Way of making wealth": "致富之道"
             ],
             "german": [ 
                 "Abstinence from flesh": "Fleischabstinenz",
@@ -1083,7 +1119,13 @@ class TranslationUtil {
                 "The worth of a wife": "Der Wert einer Frau",
                 "Truth consciousness": "Wahrheitsbewusstsein",
                 "Unforgetfulness": "Unvergesslichkeit",
-                "Veracity": "Wahrhaftigkeit"
+                "Veracity": "Wahrhaftigkeit",
+                "Wailing of pining love": "Liebeswehen des Verlangens",
+                "Wailing over pallor": "Gelbsucht über Gelb",
+                "Walk with kings": "Gehe mit Königen um",
+                "Wanton women": "Böse Frauen",
+                "Wasteful look for wistful love": "Vergebliche Lektüre für trübe Liebe",
+                "Way of making wealth": "Weg zum Reichtum"
             ],
             "korean": [ 
                 "Abstinence from flesh": "고기 금욕",
@@ -1212,7 +1254,13 @@ class TranslationUtil {
                 "The worth of a wife": "아내의 가치",
                 "Truth consciousness": "진실의 의식",
                 "Unforgetfulness": "잊지 않음",
-                "Veracity": "진실성"
+                "Veracity": "진실성",
+                "Wailing of pining love": "행복의 슬픔",
+                "Wailing over pallor": "흑반의 슬픔",
+                "Walk with kings": "왕들과 걸어가는 것",
+                "Wanton women": "나쁜 여자",
+                "Wasteful look for wistful love": "슬픔의 눈빛",
+                "Way of making wealth": "재산을 만드는 방법"
             ],
             "malay": [ 
                 "Abstinence from flesh": "Penghindaran dari daging",
@@ -1341,7 +1389,13 @@ class TranslationUtil {
                 "The worth of a wife": "Nilai seorang isteri",
                 "Truth consciousness": "Sedaran kebenaran",
                 "Unforgetfulness": "Tidak lupa",
-                "Veracity": "Kebenaran"
+                "Veracity": "Kebenaran",
+                "Wailing of pining love": "Gelisahkan cinta",
+                "Wailing over pallor": "Gelisahkan karena kemabaran",
+                "Walk with kings": "Berjalan dengan raja",
+                "Wanton women": "Orang wanita yang tidak bermoral",
+                "Wasteful look for wistful love": "Tampilan yang boros untuk cinta yang sedih",
+                "Way of making wealth": "Cara membuat kekayaan"
             ],
             "malayalam": [ 
                  "Abstinence from flesh": "മാംസത്യാഗം",
@@ -1470,7 +1524,13 @@ class TranslationUtil {
                 "The worth of a wife": "ഭാര്യയുടെ മൂല്യം",
                 "Truth consciousness": "സത്യസംവേദന",
                 "Unforgetfulness": "മറവിയില്ലായ്മ",
-                "Veracity": "സത്യം"
+                "Veracity": "സത്യം",
+                "Wailing of pining love": "പ്രേമയുടെ ദുഃഖം ഗുസ്സാവാനി",
+                "Wailing over pallor": "പലരെ ബാധിക്കുന്ന ഗുസ്സാവാനി",
+                "Walk with kings": "ശാസ്ത്രിക്കുക",
+                "Wanton women": "ബെച്ചന്റെ സ്ത്രീകൾ",
+                "Wasteful look for wistful love": "പ്രേമയുടെ ദുഃഖം ഗുസ്സാവാനി",
+                "Way of making wealth": "ധനം നേടിക്കുന്ന രാസ്ത്രി"
             ],
             "polish": [ 
                 "Abstinence from flesh": "Wstrzemięźliwość od mięsa",
@@ -1599,7 +1659,13 @@ class TranslationUtil {
                 "The worth of a wife": "Wartość żony",
                 "Truth consciousness": "Świadomość prawdy",
                 "Unforgetfulness": "Niezapomnienie",
-                "Veracity": "Prawdomówność"
+                "Veracity": "Prawdomówność",
+                "Wailing of pining love": "Głosy płaczącej miłości",
+                "Wailing over pallor": "Głosy płaczącej miłości",
+                "Walk with kings": "Ścieżka z władcami",
+                "Wanton women": "Będące wśród wdzięcznych",
+                "Wasteful look for wistful love": "Widząc wśród wdzięcznych",
+                "Way of making wealth": "Ścieżka z władcami"
             ],
             "russian": [ 
                 "Abstinence from flesh": "Воздержание от мяса",
@@ -1728,7 +1794,13 @@ class TranslationUtil {
                 "The worth of a wife": "Ценность жены",
                 "Truth consciousness": "Сознание истины",
                 "Unforgetfulness": "Незабывчивость",
-                "Veracity": "Истина"
+                "Veracity": "Истина",
+                "Wailing of pining love": "Скрип души влюбленного",
+                "Wailing over pallor": "Скрип души от бледности",
+                "Walk with kings": "Служба королям",
+                "Wanton women": "Безрассудные женщины",
+                "Wasteful look for wistful love": "Взгляд на бледность влюбленного",
+                "Way of making wealth": "Способ создания богатства"
             ],
             "singalam": [ 
                 "Abstinence from flesh": "මාංස විමුක්තිය",
@@ -1857,7 +1929,13 @@ class TranslationUtil {
                 "The worth of a wife": "දිවාව් අග්‍රය",
                 "Truth consciousness": "දිනුම් සංවේදනය",
                 "Unforgetfulness": "දිනුම් අනුමාපනය",
-                "Veracity": "දිනුම් සංවේදනය"
+                "Veracity": "දිනුම් සංවේදනය",
+                "Wailing of pining love": "ප්‍රේම මිත්‍රත්වයේ දුක්",
+                "Wailing over pallor": "ප්‍රේම මිත්‍රත්වයේ දුක්",
+                "Walk with kings": "මහත්වයාගේ මන්දය",
+                "Wanton women": "ප්‍රේම මිත්‍රත්වයේ දුක්",
+                "Wasteful look for wistful love": "ප්‍රේම මිත්‍රත්වයේ දුක්",
+                "Way of making wealth": "මිත්‍රත්වයේ දුක්"
             ],
             "swedish": [ 
                 "Abstinence from flesh": "Avhållsamhet från kött",
@@ -1986,7 +2064,13 @@ class TranslationUtil {
                 "The worth of a wife": "En hustrus värde",
                 "Truth consciousness": "Sanningens medvetande",
                 "Unforgetfulness": "Oförglömlighet",
-                "Veracity": "Sanningsenlighet"
+                "Veracity": "Sanningsenlighet",
+                "Wailing of pining love": "Klagan av längtande kärlek",
+                "Wailing over pallor": "Klagan över blekhet",
+                "Walk with kings": "Gå med kungar",
+                "Wanton women": "Vilda kvinnor",
+                "Wasteful look for wistful love": "Slösaktig blick för längtande kärlek",
+                "Way of making wealth": "Vägen till att skapa rikedom"
             ]
         ]
         
