@@ -1,0 +1,1 @@
+.package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.14.1")

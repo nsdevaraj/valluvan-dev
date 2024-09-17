@@ -1,0 +1,23 @@
+{
+  "configurations" : [
+    {
+      "id" : "760EE79A-DBE2-4162-9380-9414D521FD61",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:valluvan.xcodeproj",
+      "identifier" : "FE1B2D822C92C133006DBC55",
+      "name" : "Valluvan"
+    }
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}
