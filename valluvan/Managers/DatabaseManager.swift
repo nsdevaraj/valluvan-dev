@@ -47,29 +47,37 @@ public class DatabaseManager {
     }
 
     
-    public func getIyals(for pal: String, language: String) -> [String] {
-        let tirukkuralTable = Table("tirukkural")
-        let kuralId = SQLite.Expression<Int>("kno")
-        let palExpr = language == "Tamil" ? SQLite.Expression<String>("pal") : SQLite.Expression<String>("title")
-        let iyalExpr = language == "Tamil" ? SQLite.Expression<String>("iyal") : SQLite.Expression<String>("heading")
-        
-        var iyals: [String] = []
-        
-        do {
-            let query = tirukkuralTable
-                .select(iyalExpr)
-                .filter(palExpr == pal)
-                .group(iyalExpr)
-                .order(kuralId.asc)
-             
-            for row in try db!.prepare(query) {
-                iyals.append(row[iyalExpr])
+    public func getIyals(for pal: String, language: String) async -> [String] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else {
+                    continuation.resume(returning: [])
+                    return
+                }
+
+                let tirukkuralTable = Table("tirukkural")
+                let kuralId = SQLite.Expression<Int>("kno")
+                let palExpr = language == "Tamil" ? SQLite.Expression<String>("pal") : SQLite.Expression<String>("title")
+                let iyalExpr = language == "Tamil" ? SQLite.Expression<String>("iyal") : SQLite.Expression<String>("heading")
+                
+                var iyals: [String] = []
+                
+                do {
+                    let query = tirukkuralTable
+                        .select(iyalExpr)
+                        .filter(palExpr == pal)
+                        .group(iyalExpr)
+                        .order(kuralId.asc)
+                     
+                    for row in try self.db!.prepare(query) {
+                        iyals.append(row[iyalExpr])
+                    }
+                } catch {
+                    print("Error fetching iyals: \(error)")
+                }
+                continuation.resume(returning: iyals)
             }
-        } catch {
-            print("Error fetching iyals: \(error)")
-        } 
-            
-        return iyals
+        }
     }
  
     public func getAdhigarams(for iyal: String, language: String) -> ([String], [Int], [String], [String]) {
@@ -197,7 +205,7 @@ public class DatabaseManager {
                     appendExplanation(to: &attributedExplanation, title: "பரிமேலழகர் விளக்கம்: ", content: row[pariExplanationExpr], boldAttributes: boldAttributes)
                     appendExplanation(to: &attributedExplanation, title: "மு. வரதராசன் விளக்கம்: ", content: row[varaExplanationExpr], boldAttributes: boldAttributes)
                     appendExplanation(to: &attributedExplanation, title: "சாலமன் பாப்பையா விளக்கம்: ", content: row[popsExplanationExpr], boldAttributes: boldAttributes)    
-                    appendExplanation(to: &attributedExplanation, title: "வீ. முனிசாமி விளக்கம்: ", content: row[muniExplanationExpr], boldAttributes: boldAttributes, isLast: true)
+                    appendExplanation(to: &attributedExplanation, title: "வ. முனிசாமி விளக்கம்: ", content: row[muniExplanationExpr], boldAttributes: boldAttributes, isLast: true)
                 }
             } catch {
                 print("Error fetching Tamil explanation: \(error)")

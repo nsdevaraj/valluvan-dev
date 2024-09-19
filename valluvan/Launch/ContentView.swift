@@ -120,8 +120,7 @@ struct ContentView: View {
         .onChange(of: selectedPal) { oldValue, newValue in
             Task {
                 await loadIyals()
-            }
-            translateIyals()
+            } 
         }
         .onChange(of: selectedLanguage) { oldValue, newValue in
             updateSelectedPal()
@@ -444,15 +443,14 @@ struct ContentView: View {
 
     private func onAppearActions() {
         Task {
-            await loadIyals()
-            translateIyals()
+            await loadIyals() 
         }
         setupSiriShortcut()
     }
 
     private func handleAppBecomeActive() async {
         if let kuralId = notificationKuralId.wrappedValue {
-            if let result = await DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
+            if let result =  DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
                 await MainActor.run {
                     selectedSearchResult = result
                     showExplanationView = true
@@ -471,6 +469,10 @@ struct ContentView: View {
 
     private func loadIyals() async { 
         iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
+        if iyals.count == 0 {
+            iyals = ["Preface", "Domestic Virtue", "Ascetic Virtue"]
+        }
+        translateIyals()
     }
 }
  
