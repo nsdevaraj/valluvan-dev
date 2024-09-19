@@ -12,11 +12,15 @@ struct LanguageSettingsView: View {
     @Environment(\.colorScheme) var colorScheme
     
     @State private var showFavorites = false
-     @State private var podcastPlayingStates: [String: Bool] = [
+    @State private var podcastPlayingStates: [String: Bool] = [
         "Virtue": false,
         "Wealth": false,
         "Love": false
     ]
+    
+    @StateObject private var audioManager = AudioManager.shared
+    @State private var audioProgress: Double = 0.0
+    @State private var isEditing = false
 
     static let languages: [(key: String, displayName: String)] = [
         ("Tamil", "தமிழ்"),
@@ -60,15 +64,35 @@ struct LanguageSettingsView: View {
                                 Image(systemName: "mic")
                                     .foregroundColor(.blue)
                                 Text(songName)
-                                    .foregroundColor(podcastPlayingStates[songName] == true ? .green : .primary)
+                                    .foregroundColor(audioManager.currentSong == songName ? .green : .primary)
                                 Spacer()
                                 Button(action: {
-                                    togglePodcastPlayback(named: songName)
+                                    audioManager.toggleAudio(for: songName)
                                 }) {
-                                    Image(systemName: podcastPlayingStates[songName] == true ?  "pause.fill" : "play.fill")
+                                    Image(systemName: audioManager.currentSong == songName && audioManager.isPlaying ? "pause.fill" : "play.fill")
                                         .foregroundColor(.blue)
                                 }
                             }
+                        }
+                        
+                        if audioManager.isPlaying, let currentSong = audioManager.currentSong {
+                            VStack {
+                                Text("Now Playing: \(currentSong)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                HStack {
+                                    Slider(value: $audioProgress, in: 0...1) { editing in
+                                        isEditing = editing
+                                        if !editing {
+                                            audioManager.seek(to: audioProgress)
+                                        }
+                                    }
+                                    Text(String(format: "%.2f", audioProgress))
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(.top, 8)
                         }
                     }
                 }
@@ -160,6 +184,11 @@ struct LanguageSettingsView: View {
             FavoritesView(favorites: loadFavorites(), selectedLanguage: selectedLanguage)
                 .environmentObject(appState)
         }
+        .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
+            if audioManager.isPlaying && !isEditing {
+                audioProgress = audioManager.getCurrentProgress()
+            }
+        }
     }
     
     private func loadFavorites() -> [Favorite] {
@@ -188,24 +217,6 @@ struct LanguageSettingsView: View {
         if let url = URL(string: urlString) {
             UIApplication.shared.open(url)
         }
-    }
-    
-    private func playSong(named songName: String) {
-        AudioManager.shared.playAudio(for: songName)
-    }
-    
-    private func togglePodcastPlayback(named songName: String) {
-        AudioManager.shared.toggleAudio(for: songName)
-        podcastPlayingStates[songName]?.toggle()
+    } 
 
-        
-        if podcastPlayingStates[songName] == true {
-            for (otherSong, isPlaying) in podcastPlayingStates {
-                if otherSong != songName && isPlaying {
-                    AudioManager.shared.pauseAudio(for: otherSong)
-                    podcastPlayingStates[otherSong] = false
-                }
-            }
-        }
-    }
 }
