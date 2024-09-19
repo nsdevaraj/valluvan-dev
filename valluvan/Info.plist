@@ -13,5 +13,9 @@
 		<key>UIImageName</key>
 		<string>LaunchScreenImage</string>
 	</dict>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen</string>
 </dict>
 </plist>

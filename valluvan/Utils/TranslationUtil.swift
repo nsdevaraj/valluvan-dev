@@ -7,6 +7,9 @@ class TranslationUtil {
             "English": [
                 "Miscelleanous": "Misc"
             ],
+            "Tamil": [
+                "புதல்வரைப் பெறுதல்": "மக்கட்பேறு"
+            ],
             "telugu": [
                 "Preface": "ముందుమాట",
                 "Domestic Virtue": "గృహస్థ ధర్మం",
