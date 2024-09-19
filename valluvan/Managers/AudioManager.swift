@@ -2,33 +2,29 @@ import AVFoundation
 
 class AudioManager {
     static let shared = AudioManager()
-    private var audioPlayers: [String: AVPlayer] = [:]
+    private var audioPlayers: [String: AVPlayer] = [:] 
 
     private init() {}
-
+    private var currentSong:String?
     func playAudio(for songName: String) {
-        let songMap: [String: String] = [
-            "Virtue": "Virtue.mp3",
-            "Wealth": "Wealth.mp3",
-            "Love": "Love.mp3"
-        ]
-
-        guard let fileName = songMap[songName],
-              let url = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/main/valluvan/Podcasts/\(fileName)") else { return }
+        stopCurrentlyPlayingAudio()
+        guard let url = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/main/valluvan/Podcasts/\(songName).mp3") else { return }
 
         if let player = audioPlayers[songName] {
+            currentSong = songName
             player.play()
         } else {
             let player = AVPlayer(url: url)
             audioPlayers[songName] = player
+            currentSong = songName
             player.play()
-        }
+        } 
     }
 
     func pauseAudio(for songName: String) {
         if let player = audioPlayers[songName] {
             player.pause()
-        }
+        } 
     }
 
     func toggleAudio(for songName: String) {
@@ -36,10 +32,16 @@ class AudioManager {
             if player.timeControlStatus == .playing {
                 player.pause()
             } else {
+                currentSong = songName
                 player.play()
             }
         } else {
+            currentSong = songName
             playAudio(for: songName)
         }
+    }
+    
+    private func stopCurrentlyPlayingAudio() {
+        pauseAudio(for: currentSong ?? "")
     }
 }
