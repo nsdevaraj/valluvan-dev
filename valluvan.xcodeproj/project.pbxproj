@@ -14,6 +14,7 @@
 		FE643BEF2C96D0380042676A /* ExplanationComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BEC2C96D0370042676A /* ExplanationComponents.swift */; };
 		FE643BF02C96D0380042676A /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BED2C96D0370042676A /* ExplanationView.swift */; };
 		FE643BF12C96D0380042676A /* ExplanationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE643BEE2C96D0380042676A /* ExplanationViewModel.swift */; };
+		FE9A529E2C9C4C5600D5B5D1 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9A529D2C9C4C5600D5B5D1 /* AudioManager.swift */; };
 		FEBC786F2C96A5C800411700 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785B2C96A5C800411700 /* FavoritesView.swift */; };
 		FEBC78702C96A5C800411700 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785C2C96A5C800411700 /* NotificationManager.swift */; };
 		FEBC78712C96A5C800411700 /* PalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBC785D2C96A5C800411700 /* PalButton.swift */; };
@@ -47,6 +48,7 @@
 		FE643BED2C96D0370042676A /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		FE643BEE2C96D0380042676A /* ExplanationViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationViewModel.swift; sourceTree = "<group>"; };
 		FE7D91122C95A78300A2E9A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = Valluvan/Info.plist; sourceTree = "<group>"; };
+		FE9A529D2C9C4C5600D5B5D1 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		FEBC785B2C96A5C800411700 /* FavoritesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		FEBC785C2C96A5C800411700 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		FEBC785D2C96A5C800411700 /* PalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PalButton.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 		FE5EEAFD2C9820D200F23A5F /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				FE9A529D2C9C4C5600D5B5D1 /* AudioManager.swift */,
 				FEBC78672C96A5C800411700 /* DatabaseManager.swift */,
 				FEBC785C2C96A5C800411700 /* NotificationManager.swift */,
 			);
@@ -293,6 +296,7 @@
 				FEBC78812C96A5C800411700 /* SearchResultsView.swift in Sources */,
 				FE643BF12C96D0380042676A /* ExplanationViewModel.swift in Sources */,
 				FEBC78802C96A5C800411700 /* TranslationUtil.swift in Sources */,
+				FE9A529E2C9C4C5600D5B5D1 /* AudioManager.swift in Sources */,
 				FECB708B2C92F33E00989E70 /* ContentView.swift in Sources */,
 				FEBC78762C96A5C800411700 /* GoToKuralView.swift in Sources */,
 				FEC911FD2C956E7C00E6AE94 /* AppState.swift in Sources */,
@@ -435,7 +439,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "valluvan/Preview\\ Content";
-				DEVELOPMENT_TEAM = 8CV34TZC4L;
+				DEVELOPMENT_TEAM = GYB67KYAAB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Valluvan/Info.plist;
@@ -452,7 +456,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nsdevaraj.valluvan;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devois.valluvan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -475,7 +479,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "valluvan/Preview\\ Content";
-				DEVELOPMENT_TEAM = 8CV34TZC4L;
+				DEVELOPMENT_TEAM = GYB67KYAAB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Valluvan/Info.plist;
@@ -492,7 +496,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nsdevaraj.valluvan;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devois.valluvan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
