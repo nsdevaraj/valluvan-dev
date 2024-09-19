@@ -87,7 +87,7 @@ struct LanguageSettingsView: View {
                                             audioManager.seek(to: audioProgress)
                                         }
                                     }
-                                    Text(String(format: "%.2f", audioProgress))
+                                    Text(String(format: "%.1f%%", audioProgress * 100))
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                 }
