@@ -5,19 +5,22 @@ class ExplanationViewModel: ObservableObject {
     @Published var isFavorite = false
     @Published var isSpeaking = false
     @Published var showShareSheet = false
+    private var audioManager = AudioManager.shared
     private let speechSynthesizer = AVSpeechSynthesizer()
     private let kuralId: Int
     private let adhigaram: String
     private let adhigaramId: String
     private let lines: [String]
     private let explanation: String
+    private let iyal: String
 
-    init(kuralId: Int, adhigaram: String, adhigaramId: String, lines: [String], explanation: String) {
+    init(kuralId: Int, adhigaram: String, adhigaramId: String, lines: [String], explanation: String, iyal: String) {
         self.kuralId = kuralId
         self.adhigaram = adhigaram
         self.adhigaramId = adhigaramId
         self.lines = lines
         self.explanation = explanation
+        self.iyal = iyal
         checkIfFavorite()
     }
 
@@ -39,7 +42,7 @@ class ExplanationViewModel: ObservableObject {
     }
 
     private func addFavorite() {
-        let favorite = Favorite(id: kuralId, adhigaram: adhigaram, adhigaramId: adhigaramId, lines: lines)
+        let favorite = Favorite(id: kuralId, adhigaram: adhigaram, adhigaramId: adhigaramId, lines: lines, iyal: iyal)
         var favorites: [Favorite] = []
         if let data = UserDefaults.standard.data(forKey: "favorites") {
             if let decoded = try? JSONDecoder().decode([Favorite].self, from: data) {
@@ -63,23 +66,33 @@ class ExplanationViewModel: ObservableObject {
         }
     }
 
-    func toggleSpeech() {
-        if isSpeaking {
-            stopSpeech()
-        } else {
-            startSpeech()
+    func tamilSpeech(kuralId: Int) { 
+       if  audioManager.isPlaying {
+            audioManager.pauseAudio(for: "Kural/" + String(kuralId))
+        } else { 
+             audioManager.toggleAudio(for: "Kural/" +  String(kuralId))
         }
     }
 
-    private func startSpeech() {
+    func toggleSpeech(selectedLanguage: String) {
+        if isSpeaking {
+            stopSpeech()
+        } else {
+            startSpeech(selectedLanguage: selectedLanguage)
+        }
+    }
+
+    private func startSpeech(selectedLanguage: String) {
+        let language = selectedLanguage
         let content = """
         \(adhigaram)
         \(lines.joined(separator: "\n"))
-        \(explanation)
-        """
-        let utterance = AVSpeechUtterance(string: content)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.5
+        """ 
+        
+        let langCode = LanguageUtil.getLanguageCode(language: language)
+        let utterance = AVSpeechUtterance(string:content)
+        
+        utterance.voice = AVSpeechSynthesisVoice(language: langCode) 
         speechSynthesizer.speak(utterance)
         isSpeaking = true
     }

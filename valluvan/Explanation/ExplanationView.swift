@@ -23,7 +23,7 @@ struct ExplanationView: View {
         self.kuralId = kuralId
         self.iyal = iyal
         self._shouldNavigateToContentView = shouldNavigateToContentView
-        _viewModel = StateObject(wrappedValue: ExplanationViewModel(kuralId: kuralId, adhigaram: adhigaram, adhigaramId: adhigaramId, lines: lines, explanation: explanation.string))
+        _viewModel = StateObject(wrappedValue: ExplanationViewModel(kuralId: kuralId, adhigaram: adhigaram, adhigaramId: adhigaramId, lines: lines, explanation: explanation.string, iyal: iyal))
     }
 
     var body: some View {
@@ -52,9 +52,11 @@ struct ExplanationView: View {
                 isSpeaking: $viewModel.isSpeaking,
                 showShareSheet: $viewModel.showShareSheet,
                 selectedLanguage: selectedLanguage,
+                kuralId: kuralId,
                 toggleFavorite: viewModel.toggleFavorite,
                 copyContent: viewModel.copyContent,
                 toggleSpeech: viewModel.toggleSpeech,
+                tamilSpeech: viewModel.tamilSpeech,
                 dismiss: { presentationMode.wrappedValue.dismiss() }
             ))
         }
@@ -68,5 +70,6 @@ struct ExplanationView: View {
             ShareSheet(activityItems: [viewModel.getShareContent()])
         }
         .environment(\.sizeCategory, appState.fontSize.textSizeCategory)
+        .environment(\.layoutDirection, selectedLanguage == "arabic" ? .rightToLeft : .leftToRight)
     }
 }

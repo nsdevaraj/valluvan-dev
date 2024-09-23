@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LinePairView: View {
     let linePair: [String]
+    let language: String
     let onTap: ([String], Int) -> Void
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var appState: AppState
@@ -12,8 +13,19 @@ struct LinePairView: View {
         let firstLine = String(parts[1])
         let secondLine = linePair.count > 1 ? linePair[1] : ""
         
-        return ZStack(alignment: .topTrailing) {
-            HStack(alignment: .top, spacing: 15) {            
+        return ZStack(alignment: language == "arabic" ? .topLeading : .topTrailing) {
+
+            Text("\(kuralId)")
+                .font(.system(size: 12))
+                .foregroundColor(.white)
+                .frame(width: 32, height: 32)
+                .background(Color.teal.opacity(0.8))
+                .clipShape(Circle())
+                .padding([.top, .trailing], 4)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+
+            HStack(alignment: .top, spacing: 15) {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(firstLine)
                         .font(.subheadline)
@@ -26,16 +38,8 @@ struct LinePairView: View {
                 }
                 Spacer()
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
+            .environment(\.layoutDirection, language == "arabic" ? .rightToLeft : .leftToRight)
             
-            Text("\(kuralId)")
-                .font(.system(size: 12))
-                .foregroundColor(.white)
-                .frame(width: 32, height: 32)
-                .background(Color.teal.opacity(0.8))
-                .clipShape(Circle())
-                .padding([.top, .trailing], 4)
         }
         .frame(maxWidth: .infinity)
         .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemBackground))

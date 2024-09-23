@@ -1,8 +1,11 @@
 import Foundation
 import UserNotifications
 
-class NotificationManager {
+class NotificationManager: ObservableObject {
     static let shared = NotificationManager()
+    
+    @Published var hour: Int = 9
+    @Published var minute: Int = 0
     
     private init() {}
     
@@ -36,8 +39,8 @@ class NotificationManager {
         content.sound = UNNotificationSound.default
         
         var dateComponents = DateComponents()
-        dateComponents.hour = 9 
-        dateComponents.minute = 0
+        dateComponents.hour = hour
+        dateComponents.minute = minute
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         
@@ -49,7 +52,7 @@ class NotificationManager {
             }
         }
     }
-    
+
     func cancelAllNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }

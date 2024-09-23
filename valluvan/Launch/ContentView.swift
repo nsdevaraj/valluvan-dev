@@ -31,6 +31,7 @@ struct Favorite: Codable, Identifiable {
     let adhigaram: String
     let adhigaramId: String
     let lines: [String]
+    let iyal: String
 }
 
 struct ContentView: View {
@@ -42,6 +43,7 @@ struct ContentView: View {
     @State private var iyal: String = ""  
     
     @State private var searchText = ""
+    @State private var searchQuery = ""
     @State private var searchResults: [DatabaseSearchResult] = []
     @State private var isShowingSearchResults = false
     @State private var selectedSearchResult: DatabaseSearchResult? 
@@ -117,34 +119,28 @@ struct ContentView: View {
         .preferredColorScheme(isDarkMode ? .dark : .light)
         .environment(\.sizeCategory, appState.fontSize.textSizeCategory)
         .onAppear(perform: onAppearActions)
-        .onChange(of: selectedPal) { oldValue, newValue in
-            Task {
-                await loadIyals()
-            } 
-        }
-        .onChange(of: selectedLanguage) { oldValue, newValue in
-            updateSelectedPal()
-            translateIyals()
-        }
-        .onChange(of: shouldNavigateToContentView) { oldValue, newValue in
-            if newValue {
-                shouldNavigateToContentView = false
+        .onChange(of: selectedPal, perform: onSelectedPalChange)
+        .onChange(of: selectedLanguage, perform: onSelectedLanguageChange)
+        .sheet(isPresented: $isShowingSearchResults) {
+            if isSearchResultsReady {
+                searchResultsSheet()
+            } else {
+                ProgressView("Loading results...")
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.isSearchResultsReady = true
+                        }
+                    }
             }
         }
-        .sheet(isPresented: $isShowingSearchResults, content: searchResultsSheet)
         .sheet(item: $selectedSearchResult, content: explanationSheet)
+        .onChange(of: shouldNavigateToContentView, perform: onShouldNavigateToContentViewChange)
         .sheet(isPresented: $showFavorites, content: favoritesSheet)
         .sheet(isPresented: $showGoToKural, content: goToKuralSheet)
         .sheet(isPresented: $showLanguageSettings, content: languageSettingsSheet)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { notification in
-            Task {
-                await handleAppBecomeActive()
-            }
-        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification), perform: handleNotification)
         .sheet(isPresented: $showExplanationView, content: explanationViewSheet)
-        .task {
-            await loadIyalsTask()
-        }
+        .task(loadIyalsTask)
     }
 
     private func getCurrentTitle(_ index: Int) -> String {
@@ -186,6 +182,39 @@ struct ContentView: View {
         }
     }
     
+    private func loadIyals() async {  
+        iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
+        if iyals.isEmpty { iyals = ["Preface", "Domestic Virtue", "Ascetic Virtue"] }
+        translateIyals()
+    }
+
+    private func firstWordsOfTypes(from sentence: String) -> String {
+        let tagger = NSLinguisticTagger(tagSchemes: [.lexicalClass], options: 0)
+        tagger.string = sentence
+
+        var firstAdjective: String?
+        var firstNoun: String?
+        var adjNoun: String = ""
+
+        tagger.enumerateTags(in: NSRange(location: 0, length: sentence.utf16.count), unit: .word, scheme: .lexicalClass) { tag, tokenRange, stop in
+            let range = Range(tokenRange, in: sentence)!
+            let word = String(sentence[range])
+
+            if firstAdjective == nil, tag == .adjective {
+                firstAdjective = word
+            } else if firstNoun == nil, tag == .noun {
+                firstNoun = word
+            }
+
+            if firstAdjective != nil || firstNoun != nil  {
+                adjNoun = word
+                stop.pointee = true // Stop enumeration
+            }
+        }
+
+        return adjNoun
+    }
+    
     func performSearch() {
         guard !searchText.isEmpty else {
             searchResults = []
@@ -196,50 +225,17 @@ struct ContentView: View {
         
         isSearching = true
         isSearchResultsReady = false
-        
-        originalSearchText = searchText  // Store the original search text
-        // Remove all special characters from searchText
-        searchText = searchText.components(separatedBy: CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ").inverted).joined()
-        // Split the search text into words
-        let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-        
-        // Identify nouns and pick random nouns (up to 3) if there are multiple words
-        let searchQuery: String
-        if words.count > 1 {
-            let nouns = words.filter { word in
-                let tagger = NLTagger(tagSchemes: [.nameType])
-                tagger.string = word
-                let (tag, _) = tagger.tag(at: word.startIndex, unit: .word, scheme: .nameType)
-                return tag != .personalName || tag == .placeName || tag == .organizationName
-            }
-            
-            if !nouns.isEmpty {
-                let randomNouns = nouns.shuffled().prefix(min(3, nouns.count))
-                searchQuery = randomNouns[0]
-            } else {
-                // If no nouns found, use the original logic
-                let randomWords = words.shuffled().prefix(min(3, words.count))
-                searchQuery = randomWords[0]
-            }
-        } else {
-            searchQuery = searchText
-        }
-        
+        originalSearchText = searchText 
         
         DispatchQueue.global(qos: .userInitiated).async {
-            let results: [DatabaseSearchResult]
-            if self.selectedLanguage == "Tamil" { 
-                results = self.searchTamilContent(query: searchQuery)
-            } else { 
-                results = self.searchContent(query: searchQuery)
-            } 
-            print("results: \(searchQuery)")
+            let results: [DatabaseSearchResult] 
+            results = self.aiSearchContent() 
+            print("results: \(searchText)")
             if results.count == 0 {
                 DispatchQueue.main.async {
                     let alert = UIAlertController(title: "No Results", message: "No kural, found for '\(self.originalSearchText)'", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let rootViewController = windowScene.windows.first?.rootViewController {
+                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
                         rootViewController.present(alert, animated: true, completion: nil)
                     }
                 }
@@ -248,9 +244,7 @@ struct ContentView: View {
                 self.searchResults = results
                 self.isSearching = false
                 self.hasSearched = true
-                self.isShowingSearchResults = !results.isEmpty
-                
-                // Add a small delay before setting isSearchResultsReady to true
+                self.isShowingSearchResults = !results.isEmpty 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.isSearchResultsReady = true
                 }
@@ -258,9 +252,24 @@ struct ContentView: View {
         }
     }
 
-    func searchContent(query: String) -> [DatabaseSearchResult] {
-        let databaseResults = DatabaseManager.shared.searchContent(query: query, language: selectedLanguage)
-        return databaseResults.map { dbResult in
+
+    func aiSearchContent() -> [DatabaseSearchResult] { 
+        searchQuery = searchText
+        searchText = searchText.components(separatedBy: CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ").inverted).joined()
+        // Split the search text into words
+        let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+         
+        if words.count > 1 {
+           let specialWord: String = firstWordsOfTypes(from:searchText)
+            searchQuery = specialWord == "" ? words.shuffled().prefix(min(3, words.count))[0] :specialWord
+            print("searchText: \(searchQuery)")
+        } else {
+            searchText = searchText
+        }
+        print("searchText: \(searchText)")
+        if self.selectedLanguage != "Tamil" {  
+            let databaseResults = DatabaseManager.shared.searchContent(query: searchQuery, language: selectedLanguage)
+            return databaseResults.map { dbResult in
             DatabaseSearchResult(
                 heading: dbResult.heading,
                 subheading: dbResult.subheading,
@@ -268,21 +277,21 @@ struct ContentView: View {
                 explanation: dbResult.explanation,
                 kuralId: dbResult.kuralId
             )
-        }
+        }   
+        } else{
+            let databaseResults = DatabaseManager.shared.searchTamilContent(query: searchQuery)
+            return databaseResults.map { dbResult in
+                DatabaseSearchResult(
+                heading: dbResult.heading,
+                subheading: dbResult.subheading,
+                content: dbResult.content,
+                explanation: dbResult.explanation,
+                kuralId: dbResult.kuralId
+                )
+            }
+        } 
     }
 
-    func searchTamilContent(query: String) -> [DatabaseSearchResult] {
-        let databaseResults = DatabaseManager.shared.searchTamilContent(query: query)
-        return databaseResults.map { dbResult in
-            DatabaseSearchResult(
-                heading: dbResult.heading,
-                subheading: dbResult.subheading,
-                content: dbResult.content,
-                explanation: dbResult.explanation,
-                kuralId: dbResult.kuralId
-            )
-        }
-    }
 
     private func loadFavorites() -> [Favorite] {
         if let data = UserDefaults.standard.data(forKey: "favorites"),
@@ -310,29 +319,16 @@ struct ContentView: View {
 
     private func getSystemImage(for index: Int) -> String {
         switch index {
-        case 0:
-            return "peacesign"
-        case 1:
-            return "dollarsign.circle"
-        case 2:
-            return "heart.circle"
-        default:
-            return "\(index + 1).circle"
+        case 0: return "peacesign"
+        case 1: return "dollarsign.circle"
+        case 2: return "heart.circle"
+        default: return "\(index + 1).circle"
         }
     }
 
     private func toggleLanguage() {
-        switch selectedLanguage {
-        case "Tamil":
-            selectedLanguage = "English"
-            selectedPal = LanguageUtil.getCurrentTitle(0, for: "English")
-        case "English":
-            selectedLanguage = "Tamil"
-            selectedPal = LanguageUtil.getCurrentTitle(0, for: "Tamil")
-        default:
-            selectedLanguage = "Tamil"
-            selectedPal = LanguageUtil.getCurrentTitle(0, for: "English")
-        } 
+        selectedLanguage = selectedLanguage == "Tamil" ? "English" : "Tamil"
+        selectedPal = LanguageUtil.getCurrentTitle(0, for: selectedLanguage)
         updateSelectedPal()
     }
 
@@ -341,19 +337,15 @@ struct ContentView: View {
             translatedIyals = [:]
             return
         }
-        
+
         Task {
             for iyal in iyals {
                 do {
                     let translated = try await TranslationUtil.getTranslation(for: iyal, to: selectedLanguage)
-                    DispatchQueue.main.async {
-                        self.translatedIyals[iyal] = translated
-                    }
+                    DispatchQueue.main.async { self.translatedIyals[iyal] = translated }
                 } catch {
                     print("Error translating iyal: \(error)")
-                    DispatchQueue.main.async {
-                        self.translatedIyals[iyal] = iyal // Fallback to original text if translation fails
-                    }
+                    DispatchQueue.main.async { self.translatedIyals[iyal] = iyal }
                 }
             }
         }
@@ -375,19 +367,13 @@ struct ContentView: View {
 
     @ViewBuilder
     private func searchResultsSheet() -> some View {
-        SearchResultsView(
-            results: searchResults,
-            originalSearchText: originalSearchText,
-            onSelectResult: { result in
-                selectedSearchResult = result
-                isShowingSearchResults = false
-            }
-        )
+        SearchResultsView(results: searchResults, originalSearchText: originalSearchText, onSelectResult: { result in
+            selectedSearchResult = result
+            isShowingSearchResults = false
+        })
         .environmentObject(appState)
     }
-
-    @ViewBuilder
-    private func explanationSheet(_ result: DatabaseSearchResult) -> some View {
+    private func explanationView(result:DatabaseSearchResult)  -> some View {
         ExplanationView(
             adhigaram: result.subheading,
             adhigaramId: String((result.kuralId + 9) / 10),
@@ -398,6 +384,10 @@ struct ContentView: View {
             iyal: "",
             shouldNavigateToContentView: $shouldNavigateToContentView
         )
+    }
+    @ViewBuilder
+    private func explanationSheet(_ result: DatabaseSearchResult) -> some View {
+        explanationView(result: result)
         .environmentObject(appState)
     }
 
@@ -427,52 +417,48 @@ struct ContentView: View {
     @ViewBuilder
     private func explanationViewSheet() -> some View {
         if let result = selectedSearchResult {
-            ExplanationView(
-                adhigaram: result.subheading,
-                adhigaramId: String((result.kuralId + 9) / 10),
-                lines: [result.content],
-                explanation: NSAttributedString(string: result.explanation),
-                selectedLanguage: selectedLanguage,
-                kuralId: result.kuralId,
-                iyal: "",
-                shouldNavigateToContentView: $shouldNavigateToContentView
-            )
-            .environmentObject(appState)
+            explanationView(result: result)
         }
     }
 
     private func onAppearActions() {
         Task {
-            await loadIyals() 
+            await loadIyals()
+            translateIyals()
         }
         setupSiriShortcut()
     }
 
-    private func handleAppBecomeActive() async {
-        if let kuralId = notificationKuralId.wrappedValue {
-            if let result =  DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
-                await MainActor.run {
-                    selectedSearchResult = result
-                    showExplanationView = true
-                }
-            }
-            await MainActor.run {
-                notificationKuralId.wrappedValue = nil
-            }
+    private func onSelectedPalChange(_ newValue: String) {
+        Task {
+            await loadIyals()
+            translateIyals()
         }
     }
 
-    @Sendable
-    private func loadIyalsTask() async {
-        await loadIyals()
-    }
-
-    private func loadIyals() async { 
-        iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
-        if iyals.count == 0 {
-            iyals = ["Preface", "Domestic Virtue", "Ascetic Virtue"]
-        }
+    private func onSelectedLanguageChange(_ newValue: String) {
+        updateSelectedPal()
         translateIyals()
+    }
+
+    private func onShouldNavigateToContentViewChange(_ newValue: Bool) {
+        if newValue {
+            shouldNavigateToContentView = false
+        }
+    }
+
+    private func handleNotification(_ _: Notification) {
+        if let kuralId = notificationKuralId.wrappedValue {
+            if let result = DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
+                selectedSearchResult = result
+                showExplanationView = true
+            }
+            notificationKuralId.wrappedValue = nil
+        }
+    }
+
+    private func loadIyalsTask() async {
+        iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
     }
 }
  

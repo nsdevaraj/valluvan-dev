@@ -20,8 +20,9 @@ struct LanguageSettingsView: View {
     
     @StateObject private var audioManager = AudioManager.shared
     @State private var audioProgress: Double = 0.0
-    @State private var isEditing = false
-
+    @State private var isEditing = false 
+    @StateObject private var notificationManager = NotificationManager.shared // Add this line
+    
     static let languages: [(key: String, displayName: String)] = [
         ("Tamil", "தமிழ்"),
         ("English", "English"),
@@ -53,8 +54,28 @@ struct LanguageSettingsView: View {
                     .pickerStyle(SegmentedPickerStyle())
                 }
 
-                Section(header: Text("Notifications")) {
-                    Toggle("Daily Thirukkural (9 AM)", isOn: $appState.isDailyKuralEnabled)
+                Section(header: Text("Notifications")) { 
+                    DisclosureGroup("Schedule Daily Kural") {
+                        VStack{
+                            Toggle("Enable Notification", isOn: $appState.isDailyKuralEnabled)
+                                .toggleStyle(SwitchToggleStyle(tint: .blue))
+                            HStack {
+                                Picker("Hour", selection: $notificationManager.hour) {
+                                    ForEach(0..<24) { hour in
+                                        Text("\(hour)").tag(hour)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                Spacer()
+                                Picker("Minute", selection: $notificationManager.minute) {
+                                    ForEach(0..<60) { minute in
+                                        Text("\(minute)").tag(minute)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                            }
+                        }
+                    }
                 }
 
                 Section(header: Text("Podcasts")) {
@@ -67,7 +88,7 @@ struct LanguageSettingsView: View {
                                     .foregroundColor(audioManager.currentSong == songName ? .green : .primary)
                                 Spacer()
                                 Button(action: {
-                                    audioManager.toggleAudio(for: songName)
+                                    audioManager.toggleAudio(for: "Podcasts/" + songName)
                                 }) {
                                     Image(systemName: audioManager.currentSong == songName && audioManager.isPlaying ? "pause.fill" : "play.fill")
                                         .foregroundColor(.blue)
@@ -141,7 +162,13 @@ struct LanguageSettingsView: View {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             HStack {
-                                Text(language.displayName)
+                                if language.key == "arabic" {
+                                    Text(language.displayName)
+                                        .multilineTextAlignment(.trailing) 
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                }else{
+                                    Text(language.displayName)
+                                }
                                 Spacer()
                                 if language.key == selectedLanguage {
                                     Image(systemName: "checkmark")

@@ -67,6 +67,7 @@ struct AdhigaramView: View {
                             .foregroundColor(.blue)
                             .font(.system(size: 16))
                     }
+                    .environment(\.layoutDirection, selectedLanguage == "arabic" ? .rightToLeft : .leftToRight)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         if expandedAdhigaram == adhigaram {
@@ -122,6 +123,7 @@ struct AdhigaramView: View {
                             ForEach(allLines[originalAdhigaram] ?? [], id: \.self) { linePair in
                                 LinePairView(
                                     linePair: linePair,
+                                    language: selectedLanguage,
                                     onTap: { lines, kuralId in
                                         loadExplanation(for: adhigaram, lines: lines, kuralId: kuralId)
                                     }
@@ -151,7 +153,7 @@ struct AdhigaramView: View {
                 explanation: linePair.explanation,
                 selectedLanguage: selectedLanguage,
                 kuralId: linePair.kuralId,
-                iyal: iyal,
+                iyal: translatedIyal,
                 shouldNavigateToContentView: $shouldNavigateToContentView
             )
             .environmentObject(appState)
@@ -214,9 +216,9 @@ struct AdhigaramView: View {
                 startTimer(for: adhigaramSong)
             }
         } else {
-            let tamilURL = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/main/valluvan/Sounds/\(adhigaramSong.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? adhigaramSong).mp3")
+            let tamilURL = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/asset-bucket/valluvan/Sounds/\(adhigaramSong.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? adhigaramSong).mp3")
             let leadingZero = String(format: "%03d", Int(adhigaramId) ?? 0)
-            let englishURL = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/main/valluvan/EnglishAudio/\(leadingZero).mp3")
+            let englishURL = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/asset-bucket/valluvan/EnglishAudio/\(leadingZero).mp3")
             let playURL = (language == "Tamil") ? tamilURL : englishURL
             if let url = playURL {
                 let playerItem = AVPlayerItem(url: url)

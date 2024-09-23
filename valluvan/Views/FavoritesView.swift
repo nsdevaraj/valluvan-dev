@@ -123,7 +123,7 @@ struct FavoritesView: View {
                     explanation: explanationText,
                     selectedLanguage: selectedLanguage,
                     kuralId: favorite.id,
-                    iyal: "", 
+                    iyal: favorite.iyal, 
                     shouldNavigateToContentView: $shouldNavigateToContentView
                 ).environmentObject(appState)
             }

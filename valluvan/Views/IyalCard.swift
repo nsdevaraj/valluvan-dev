@@ -31,6 +31,7 @@ import SwiftUI
             .cornerRadius(10)
             .shadow(color: shadowColor, radius: 3, x: 0, y: 2)
             .environment(\.sizeCategory, appState.fontSize.textSizeCategory)
+            .environment(\.layoutDirection, selectedLanguage == "arabic" ? .rightToLeft : .leftToRight)
         }
         
         private var backgroundColor: Color {

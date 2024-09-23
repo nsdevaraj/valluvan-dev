@@ -11,7 +11,7 @@ class AudioManager: ObservableObject {
 
     func playAudio(for songName: String) {
         stopCurrentlyPlayingAudio()
-        guard let url = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/main/valluvan/Podcasts/\(songName).mp3") else { return }
+        guard let url = URL(string: "https://raw.githubusercontent.com/nsdevaraj/valluvan/asset-bucket/valluvan/\(songName).mp3") else { return }
 
         if let player = audioPlayers[songName] {
             currentSong = songName

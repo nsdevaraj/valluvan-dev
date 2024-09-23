@@ -58,7 +58,6 @@ struct ExplanationTextView: View {
                     .fontWeight(.bold)
                     .padding(.top)
             }
-            
             Text(AttributedString(explanation))
                 .font(.body)
         }
@@ -70,9 +69,11 @@ struct ToolbarView: View {
     @Binding var isSpeaking: Bool
     @Binding var showShareSheet: Bool
     let selectedLanguage: String
+    let kuralId: Int
     let toggleFavorite: () -> Void
     let copyContent: () -> Void
-    let toggleSpeech: () -> Void
+    let toggleSpeech: (String) -> Void
+    let tamilSpeech: (Int) -> Void
     let dismiss: () -> Void
 
     var body: some View {
@@ -92,8 +93,15 @@ struct ToolbarView: View {
                     .foregroundColor(.blue)
                     .font(.system(size: 16))
             }
-            if selectedLanguage == "English" {
-                Button(action: toggleSpeech) {
+            if selectedLanguage != "Tamil" && selectedLanguage != "telugu" && selectedLanguage != "kannad" && selectedLanguage != "malay" && selectedLanguage != "malayalam" && selectedLanguage != "singalam"{
+                Button(action: { toggleSpeech(selectedLanguage) }) {
+                    Image(systemName: isSpeaking ? "pause.circle" : "play.circle")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 16))
+                }
+            }
+             if selectedLanguage == "Tamil"{
+                Button(action: { tamilSpeech(kuralId) }) {
                     Image(systemName: isSpeaking ? "pause.circle" : "play.circle")
                         .foregroundColor(.blue)
                         .font(.system(size: 16))
