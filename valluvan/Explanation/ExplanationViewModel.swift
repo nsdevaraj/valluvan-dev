@@ -69,8 +69,10 @@ class ExplanationViewModel: ObservableObject {
     func tamilSpeech(kuralId: Int) { 
        if  audioManager.isPlaying {
             audioManager.pauseAudio(for: "Kural/" + String(kuralId))
+            isSpeaking = false
         } else { 
              audioManager.toggleAudio(for: "Kural/" +  String(kuralId))
+             isSpeaking = true
         }
     }
 
