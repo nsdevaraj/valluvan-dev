@@ -1,7 +1,7 @@
 import Foundation
-import SQLite // Make sure this import is correct
-import UIKit // Add this import for NSAttributedString
-
+import SQLite 
+import UIKit 
+ 
 public struct DatabaseSearchResult: Identifiable {
     public let id: Int
     public let heading: String
@@ -384,74 +384,124 @@ public class DatabaseManager {
         return nil
     }
     
+    func hexStringTofloatArray(_ hex: String) -> [Float]? {
+        var floatArray: [Float] = []
+        let strhex = String(hex.dropFirst().dropLast())
+        let chars = Array(strhex)
+        
+        // Ensure the hex string length is a multiple of 8
+        guard chars.count % 8 == 0 else {
+            print("Hex string length is not a multiple of 8")
+            return nil
+        }
+        
+        for i in stride(from: 0, to: chars.count, by: 8) {
+            let hexString = String(chars[i..<min(i + 8, chars.count)])
+            
+            // Convert hex string to Data
+            var byteArray = [UInt8]()
+            for j in stride(from: 0, to: hexString.count, by: 2) {
+                let startIndex = hexString.index(hexString.startIndex, offsetBy: j)
+                let endIndex = hexString.index(startIndex, offsetBy: 2)
+                let byteString = String(hexString[startIndex..<endIndex])
+                if let byte = UInt8(byteString, radix: 16) {
+                    byteArray.append(byte)
+                } else {
+                    print("Failed to convert hex string to byte: \(byteString)")
+                    return nil
+                }
+            }
+            
+            // Create Data from byte array
+            let data = Data(byteArray)
+            
+            // Ensure data has enough bytes to load a Float
+            guard data.count >= MemoryLayout<Float>.size else {
+                print("Data does not contain enough bytes to load a Float")
+                return nil
+            }
+            
+            let float = data.withUnsafeBytes { $0.load(as: Float.self) }
+            floatArray.append(float)
+        } 
+        return floatArray
+    }
+
     public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] {
-        let query = "SELECT kno, embeddings_array FROM tirukkural WHERE embeddings_array IS NOT NULL"
+        let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
         var relatedKurals: [DatabaseSearchResult] = []
         
         do {
             let rows = try db!.prepare(query)
             var targetEmbedding: [Float]?
             var allEmbeddings: [(Int, [Float])] = []
-            //     embedding = np.frombuffer(row[1], dtype=np.float32)
-        // json.dumps(embedding.tolist()
+             
             for row in rows {
                 if let idValue = row[0] as? Int64 {
                     let id = Int(idValue)
-                    if let embeddingString = row[1] as? String {
-                        if let embeddingData = embeddingString.data(using: .utf8),
-                           let embeddingArray = try? JSONSerialization.jsonObject(with: embeddingData, options: []) as? [NSNumber] {
-                            
-                            let floatArray = embeddingArray.map { $0.floatValue }
-                            
-                            if id == kuralId {
-                                targetEmbedding = floatArray
+                    if let embeddingBinding = row[1] as? Binding { 
+                        // Convert the binding to a string representation
+                        let hexString = String(describing: embeddingBinding)
+                            .replacingOccurrences(of: "Optional(x'", with: "")
+                            .replacingOccurrences(of: "')", with: "")
+                            .replacingOccurrences(of: " ", with: ""); // Remove any spaces if present
+                        
+                        // Check if the hex string is valid
+                        guard !hexString.isEmpty else {
+                            print("Hex string is empty after cleaning")
+                            return []
+                        }
+                        
+                        // Ensure the hex string does not start with 'x'
+                        let cleanedHexString = hexString.replacingOccurrences(of: "x", with: "")
+                        
+                        // Convert hex string to byte array
+                        guard let floatArray = hexStringTofloatArray(cleanedHexString) else {
+                            print("Failed to convert hex string to byte array")
+                            return []
+                        }
+                        
+                        // Store the embedding data or perform further processing as needed
+                        allEmbeddings.append((id, floatArray))
+                        print("allEmbeddings", floatArray)
+                        guard let target = targetEmbedding else {
+                            print("Target embedding not found for kuralId: \(kuralId)")
+                            return []
+                        }
+                        
+                        let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
+                            let similarity = cosineSimilarity(v1: target, v2: embedding)
+                            return (id, similarity)
+                        }
+                        
+                        let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
+                        let relatedIds = sortedSimilarities.map { $0.0 }
+                        
+                        let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
+                        let relatedRows = try db!.prepare(relatedQuery)
+                        
+                        for row in relatedRows {
+                            if let kuralIdValue = row[0] as? Int64 {
+                                let result = DatabaseSearchResult(
+                                    heading: row[1] as? String ?? "",
+                                    subheading: row[2] as? String ?? "",
+                                    content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                                    explanation: row[5] as? String ?? "",
+                                    kuralId: Int(kuralIdValue) // Convert Int64 to Int
+                                )
+                                relatedKurals.append(result)
                             } else {
-                                allEmbeddings.append((id, floatArray))
+                                print("Kural ID is not of type Int64")
                             }
-                        } else {
-                            print("Failed to parse embedding JSON for id: \(id)")
                         }
                     } else {
-                        print("Embedding data is not of type String for id: \(id)")
+                        print("Failed to cast row[1] to Binding")
+                        return []
                     }
-                } else {
-                    print("ID is not of type Int64", kuralId)
                 }
             }
-            
-            guard let target = targetEmbedding else {
-                print("Target embedding not found for kuralId: \(kuralId)")
-                return []
-            }
-            
-            let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
-                let similarity = cosineSimilarity(v1: target, v2: embedding)
-                return (id, similarity)
-            }
-            
-            let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
-            let relatedIds = sortedSimilarities.map { $0.0 }
-            
-            let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
-            let relatedRows = try db!.prepare(relatedQuery)
-            
-            for row in relatedRows {
-                if let kuralIdValue = row[0] as? Int64 {
-                    let result = DatabaseSearchResult(
-                        heading: row[1] as? String ?? "",
-                        subheading: row[2] as? String ?? "",
-                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                        explanation: row[5] as? String ?? "",
-                        kuralId: Int(kuralIdValue) // Convert Int64 to Int
-                    )
-                    relatedKurals.append(result)
-                } else {
-                    print("Kural ID is not of type Int64")
-                }
-            }
-            
         } catch {
-            print("Error finding related kurals: \(error)")
+            print("Error fetching related kurals: \(error)")
         }
         
         return relatedKurals
@@ -463,5 +513,4 @@ public class DatabaseManager {
         let magnitude2 = sqrt(v2.map { $0 * $0 }.reduce(0, +))
         return dotProduct / (magnitude1 * magnitude2)
     }
-    
 }
