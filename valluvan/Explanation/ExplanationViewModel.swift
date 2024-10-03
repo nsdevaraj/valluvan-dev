@@ -13,6 +13,7 @@ class ExplanationViewModel: ObservableObject {
     private let lines: [String]
     private let explanation: String
     private let iyal: String
+    @Published var relatedKurals: [DatabaseSearchResult] = []
 
     init(kuralId: Int, adhigaram: String, adhigaramId: String, lines: [String], explanation: String, iyal: String) {
         self.kuralId = kuralId
@@ -122,5 +123,14 @@ class ExplanationViewModel: ObservableObject {
         Explanation:
         \(explanation)
         """
+    }
+
+    func fetchRelatedKurals() {
+        Task {
+            let related = DatabaseManager.shared.findRelatedKurals(for: kuralId)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.relatedKurals = related
+            }
+        }
     }
 }

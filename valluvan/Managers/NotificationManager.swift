@@ -1,13 +1,28 @@
 import Foundation
 import UserNotifications
+import Combine
 
 class NotificationManager: ObservableObject {
     static let shared = NotificationManager()
     
+    @Published var selectedTime: Date = Date() {
+        didSet {
+            let calendar = Calendar.current
+            hour = calendar.component(.hour, from: selectedTime)
+            minute = calendar.component(.minute, from: selectedTime)
+        }
+    }
+    
     @Published var hour: Int = 9
     @Published var minute: Int = 0
     
-    private init() {}
+    private init() { 
+        let calendar = Calendar.current
+        let now = Date()
+        hour = calendar.component(.hour, from: now)
+        minute = calendar.component(.minute, from: now)
+        selectedTime = now
+    }
     
     func scheduleRandomKuralNotification() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in

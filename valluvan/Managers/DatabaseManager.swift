@@ -383,4 +383,84 @@ public class DatabaseManager {
 
         return nil
     }
+    
+    public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] {
+        let query = "SELECT kno, embeddings_array FROM tirukkural WHERE embeddings_array IS NOT NULL"
+        var relatedKurals: [DatabaseSearchResult] = []
+        
+        do {
+            let rows = try db!.prepare(query)
+            var targetEmbedding: [Float]?
+            var allEmbeddings: [(Int, [Float])] = []
+            
+            for row in rows {
+                if let idValue = row[0] as? Int64 {
+                    let id = Int(idValue)
+                    if let embeddingString = row[1] as? String {
+                        if let embeddingData = embeddingString.data(using: .utf8),
+                           let embeddingArray = try? JSONSerialization.jsonObject(with: embeddingData, options: []) as? [NSNumber] {
+                            
+                            let floatArray = embeddingArray.map { $0.floatValue }
+                            
+                            if id == kuralId {
+                                targetEmbedding = floatArray
+                            } else {
+                                allEmbeddings.append((id, floatArray))
+                            }
+                        } else {
+                            print("Failed to parse embedding JSON for id: \(id)")
+                        }
+                    } else {
+                        print("Embedding data is not of type String for id: \(id)")
+                    }
+                } else {
+                    print("ID is not of type Int64: \(idValue)")
+                }
+            }
+            
+            guard let target = targetEmbedding else {
+                print("Target embedding not found for kuralId: \(kuralId)")
+                return []
+            }
+            
+            let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
+                let similarity = cosineSimilarity(v1: target, v2: embedding)
+                return (id, similarity)
+            }
+            
+            let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
+            let relatedIds = sortedSimilarities.map { $0.0 }
+            
+            let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
+            let relatedRows = try db!.prepare(relatedQuery)
+            
+            for row in relatedRows {
+                if let kuralIdValue = row[0] as? Int64 {
+                    let result = DatabaseSearchResult(
+                        heading: row[1] as? String ?? "",
+                        subheading: row[2] as? String ?? "",
+                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                        explanation: row[5] as? String ?? "",
+                        kuralId: Int(kuralIdValue) // Convert Int64 to Int
+                    )
+                    relatedKurals.append(result)
+                } else {
+                    print("Kural ID is not of type Int64")
+                }
+            }
+            
+        } catch {
+            print("Error finding related kurals: \(error)")
+        }
+        
+        return relatedKurals
+    }
+    
+    private func cosineSimilarity(v1: [Float], v2: [Float]) -> Float {
+        let dotProduct = zip(v1, v2).map(*).reduce(0, +)
+        let magnitude1 = sqrt(v1.map { $0 * $0 }.reduce(0, +))
+        let magnitude2 = sqrt(v2.map { $0 * $0 }.reduce(0, +))
+        return dotProduct / (magnitude1 * magnitude2)
+    }
+    
 }

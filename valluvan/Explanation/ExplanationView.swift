@@ -32,7 +32,22 @@ struct ExplanationView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     HeaderView(adhigaramId: adhigaramId, adhigaram: adhigaram, kuralId: kuralId, iyal: iyal)
                     LinesView(lines: lines)
-                    ExplanationTextView(selectedLanguage: selectedLanguage, explanation: explanation)
+                    ExplanationTextView(selectedLanguage: selectedLanguage, explanation: explanation) 
+                    DisclosureGroup("Related :") {
+                        ForEach(viewModel.relatedKurals) { kural in
+                            VStack(alignment: .leading) {
+                                Text(kural.heading)
+                                    .font(.headline)
+                                Text(kural.content)
+                                    .font(.subheadline)
+                                Text(kural.explanation)
+                                    .font(.body)
+                                    .padding(.bottom, 10)
+                            }
+                            .padding()
+                        }
+                    }
+                    .padding()
                 }
                 .padding()
             }
@@ -48,20 +63,22 @@ struct ExplanationView: View {
                     }
                 },
                 trailing: ToolbarView(
-                isFavorite: $viewModel.isFavorite,
-                isSpeaking: $viewModel.isSpeaking,
-                showShareSheet: $viewModel.showShareSheet,
-                selectedLanguage: selectedLanguage,
-                kuralId: kuralId,
-                toggleFavorite: viewModel.toggleFavorite,
-                copyContent: viewModel.copyContent,
-                toggleSpeech: viewModel.toggleSpeech,
-                tamilSpeech: viewModel.tamilSpeech,
-                dismiss: { presentationMode.wrappedValue.dismiss() }
-            ))
+                    isFavorite: $viewModel.isFavorite,
+                    isSpeaking: $viewModel.isSpeaking,
+                    showShareSheet: $viewModel.showShareSheet,
+                    selectedLanguage: selectedLanguage,
+                    kuralId: kuralId,
+                    toggleFavorite: viewModel.toggleFavorite,
+                    copyContent: viewModel.copyContent,
+                    toggleSpeech: viewModel.toggleSpeech,
+                    tamilSpeech: viewModel.tamilSpeech,
+                    dismiss: { presentationMode.wrappedValue.dismiss() }
+                )
+            )
         }
         .onAppear {
             viewModel.checkIfFavorite()
+            viewModel.fetchRelatedKurals() // Fetch related Kurals on appear
         }
         .onDisappear {
             viewModel.stopSpeech()
