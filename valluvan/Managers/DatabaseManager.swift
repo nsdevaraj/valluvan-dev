@@ -385,14 +385,15 @@ public class DatabaseManager {
     }
     
     public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] {
-        let query = "SELECT kno, embeddings_array FROM tirukkural WHERE embeddings_array IS NOT NULL"
+        let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings_array IS NOT NULL"
         var relatedKurals: [DatabaseSearchResult] = []
         
         do {
             let rows = try db!.prepare(query)
             var targetEmbedding: [Float]?
             var allEmbeddings: [(Int, [Float])] = []
-            
+            //     embedding = np.frombuffer(row[1], dtype=np.float32)
+        // json.dumps(embedding.tolist()
             for row in rows {
                 if let idValue = row[0] as? Int64 {
                     let id = Int(idValue)
@@ -414,7 +415,7 @@ public class DatabaseManager {
                         print("Embedding data is not of type String for id: \(id)")
                     }
                 } else {
-                    print("ID is not of type Int64: \(idValue)")
+                    print("ID is not of type Int64")
                 }
             }
             
