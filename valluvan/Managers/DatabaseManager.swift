@@ -385,7 +385,7 @@ public class DatabaseManager {
     }
     
     public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] {
-        let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings_array IS NOT NULL"
+        let query = "SELECT kno, embeddings_array FROM tirukkural WHERE embeddings_array IS NOT NULL"
         var relatedKurals: [DatabaseSearchResult] = []
         
         do {
@@ -415,7 +415,7 @@ public class DatabaseManager {
                         print("Embedding data is not of type String for id: \(id)")
                     }
                 } else {
-                    print("ID is not of type Int64")
+                    print("ID is not of type Int64", kuralId)
                 }
             }
             
