@@ -439,7 +439,7 @@ public class DatabaseManager {
             for row in rows {
                 if let idValue = row[0] as? Int64 {
                     let id = Int(idValue)
-                    if let embeddingBinding = row[1] as? Binding { 
+                    if let embeddingBinding = row[1]{ 
                         // Convert the binding to a string representation
                         let hexString = String(describing: embeddingBinding)
                             .replacingOccurrences(of: "Optional(x'", with: "")
@@ -460,46 +460,44 @@ public class DatabaseManager {
                             print("Failed to convert hex string to byte array")
                             return []
                         }
-                        
-                        // Store the embedding data or perform further processing as needed
-                        allEmbeddings.append((id, floatArray))
-                        print("allEmbeddings", floatArray)
-                        guard let target = targetEmbedding else {
-                            print("Target embedding not found for kuralId: \(kuralId)")
-                            return []
-                        }
-                        
-                        let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
-                            let similarity = cosineSimilarity(v1: target, v2: embedding)
-                            return (id, similarity)
-                        }
-                        
-                        let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
-                        let relatedIds = sortedSimilarities.map { $0.0 }
-                        
-                        let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
-                        let relatedRows = try db!.prepare(relatedQuery)
-                        
-                        for row in relatedRows {
-                            if let kuralIdValue = row[0] as? Int64 {
-                                let result = DatabaseSearchResult(
-                                    heading: row[1] as? String ?? "",
-                                    subheading: row[2] as? String ?? "",
-                                    content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                                    explanation: row[5] as? String ?? "",
-                                    kuralId: Int(kuralIdValue) // Convert Int64 to Int
-                                )
-                                relatedKurals.append(result)
-                            } else {
-                                print("Kural ID is not of type Int64")
-                            }
-                        }
+                         
+                        if id == kuralId {
+                            targetEmbedding = floatArray
+                        } else {
+                            allEmbeddings.append((id, floatArray))
+                        } 
                     } else {
                         print("Failed to cast row[1] to Binding")
                         return []
                     }
                 }
             }
+            
+            let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
+                let similarity = cosineSimilarity(v1: targetEmbedding ?? [], v2: embedding) 
+                return (id, similarity)
+            }
+            
+            let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
+            let relatedIds = sortedSimilarities.map { $0.0 }
+            print(relatedIds, "relatedIds")
+            let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
+            let relatedRows = try db!.prepare(relatedQuery)
+            
+            for row in relatedRows {
+                if let kuralIdValue = row[0] as? Int64 {
+                    let result = DatabaseSearchResult(
+                        heading: row[1] as? String ?? "",
+                        subheading: row[2] as? String ?? "",
+                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                        explanation: row[5] as? String ?? "",
+                        kuralId: Int(kuralIdValue) // Convert Int64 to Int
+                    )
+                    relatedKurals.append(result)
+                } else {
+                    print("Kural ID is not of type Int64")
+                }
+            } 
         } catch {
             print("Error fetching related kurals: \(error)")
         }
