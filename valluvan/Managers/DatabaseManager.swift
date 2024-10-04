@@ -23,11 +23,14 @@ public struct DatabaseSearchResult: Identifiable {
 public class DatabaseManager {
     public static let shared = DatabaseManager()
     private var db: Connection?
-    
+    private var singletonDb: [(Int, [Float])] = []
     private init() {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
                 db = try Connection(path)
+                singletonKurals { embeddings in
+                    self.singletonDb = embeddings // Store the result in singletonDb
+                }
             } else {
                 print("Database file not found in the main bundle.")
                 print("Searched for 'data.sqlite' in: \(Bundle.main.bundlePath)")
@@ -197,7 +200,7 @@ public class DatabaseManager {
             varaExplanationExpr = SQLite.Expression<String>("varadarajanar")
             popsExplanationExpr = SQLite.Expression<String>("salomon")
             muniExplanationExpr = SQLite.Expression<String>("munisamy")
-            puliExplanationExpr = SQLite.Expression<String>("puliyur")
+            puliExplanationExpr = SQLite.Expression<String>("puliur")
             devExplanationExpr = SQLite.Expression<String>("devaneya")
             namaExplanationExpr = SQLite.Expression<String>("namakkal")
             tamilExplanationExpr = SQLite.Expression<String>("tamilkuzavi")
@@ -423,58 +426,92 @@ public class DatabaseManager {
             
             let float = data.withUnsafeBytes { $0.load(as: Float.self) }
             floatArray.append(float)
-        } 
+        }  
         return floatArray
     }
 
-    public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] {
-        let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
-        var relatedKurals: [DatabaseSearchResult] = []
+    func processEmbeddingBinding(_ embeddingBinding: Any) -> [Float]? {
+        // Convert the binding to a string representation
+        let hexString = String(describing: embeddingBinding)
+            .replacingOccurrences(of: "Optional(x'", with: "")
+            .replacingOccurrences(of: "')", with: "")
+            .replacingOccurrences(of: " ", with: ""); // Remove any spaces if present
+        
+        // Check if the hex string is valid
+        guard !hexString.isEmpty else {
+            print("Hex string is empty after cleaning")
+            return nil
+        }
+        
+        // Ensure the hex string does not start with 'x'
+        let cleanedHexString = hexString.replacingOccurrences(of: "x", with: "")
+        
+        // Convert hex string to byte array
+        return hexStringTofloatArray(cleanedHexString)
+    }
+
+    public func singletonKurals(completion: @escaping ([(Int, [Float])]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
+            var allEmbeddings: [(Int, [Float])] = []
+            do {
+                let rows = try self.db!.prepare(query)
+                
+                for row in rows {
+                    if let idValue = row[0] as? Int64 {
+                        let id = Int(idValue)
+                        var floatArray: [Float] = []
+                        if let embeddingBinding = row[1] { 
+                            floatArray = self.processEmbeddingBinding(embeddingBinding) ?? []
+                            allEmbeddings.append((id, floatArray)) 
+                        } else {
+                            print("Failed to cast row[1] to Binding")
+                            return
+                        }
+                    }
+                } 
+            } catch {
+                print("Error fetching related kurals: \(error)")
+            }        
+            print("allEmbeddings")
+            completion(allEmbeddings)
+        }
+    }
+
+    public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] { 
+        var relatedKurals: [DatabaseSearchResult] = [] 
+        let tirukkuralTable = Table("tirukkural")
+        let kuralIdExpr = SQLite.Expression<Int>("kno") 
+        let embeddingsExpr = SQLite.Expression<Blob>("embeddings") 
+        
+        var targetEmbedding: [Float]? 
+        do {
+            let query = tirukkuralTable
+                .select(kuralIdExpr, embeddingsExpr)    
+                .filter(kuralIdExpr == kuralId) 
+
+            for row in try db!.prepare(query) { 
+                if let embeddingBinding = row[embeddingsExpr] as? Blob { // Ensure embeddingBinding is of type Blob
+                    targetEmbedding = processEmbeddingBinding(embeddingBinding) ?? [] // Unwrap and provide a default value
+                } else {
+                    print("Failed to cast row[1] to Binding")
+                    return []
+                }
+            } 
+        } catch {
+            print("Error fetching targetEmbedding line: \(error)")
+        }
+        
+        // Safely unwrap targetEmbedding
+        guard let unwrappedTargetEmbedding = targetEmbedding else {
+            print("Target embedding is nil")
+            return [] // Return an empty array if targetEmbedding is nil
+        }
         
         do {
-            let rows = try db!.prepare(query)
-            var targetEmbedding: [Float]?
-            var allEmbeddings: [(Int, [Float])] = []
-             
-            for row in rows {
-                if let idValue = row[0] as? Int64 {
-                    let id = Int(idValue)
-                    if let embeddingBinding = row[1]{ 
-                        // Convert the binding to a string representation
-                        let hexString = String(describing: embeddingBinding)
-                            .replacingOccurrences(of: "Optional(x'", with: "")
-                            .replacingOccurrences(of: "')", with: "")
-                            .replacingOccurrences(of: " ", with: ""); // Remove any spaces if present
-                        
-                        // Check if the hex string is valid
-                        guard !hexString.isEmpty else {
-                            print("Hex string is empty after cleaning")
-                            return []
-                        }
-                        
-                        // Ensure the hex string does not start with 'x'
-                        let cleanedHexString = hexString.replacingOccurrences(of: "x", with: "")
-                        
-                        // Convert hex string to byte array
-                        guard let floatArray = hexStringTofloatArray(cleanedHexString) else {
-                            print("Failed to convert hex string to byte array")
-                            return []
-                        }
-                         
-                        if id == kuralId {
-                            targetEmbedding = floatArray
-                        } else {
-                            allEmbeddings.append((id, floatArray))
-                        } 
-                    } else {
-                        print("Failed to cast row[1] to Binding")
-                        return []
-                    }
-                }
-            }
-            
+            let allEmbeddings: [(Int, [Float])] = singletonDb  
             let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
-                let similarity = cosineSimilarity(v1: targetEmbedding ?? [], v2: embedding) 
+                let similarity = cosineSimilarity(v1: unwrappedTargetEmbedding, v2: embedding) 
                 return (id, similarity)
             }
             
