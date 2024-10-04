@@ -23,7 +23,7 @@ public struct DatabaseSearchResult: Identifiable {
 public class DatabaseManager {
     public static let shared = DatabaseManager()
     private var db: Connection?
-    private var singletonDb: [(Int, [Float])] = []
+    public var singletonDb: [(Int, [Float])] = []
     private init() {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {

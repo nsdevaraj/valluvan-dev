@@ -13,6 +13,7 @@ class ExplanationViewModel: ObservableObject {
     private let lines: [String]
     private let explanation: String
     private let iyal: String
+    @Published var isLoading: Bool = true
     @Published var relatedKurals: [DatabaseSearchResult] = []
 
     init(kuralId: Int, adhigaram: String, adhigaramId: String, lines: [String], explanation: String, iyal: String) {
@@ -126,11 +127,19 @@ class ExplanationViewModel: ObservableObject {
     }
 
     func fetchRelatedKurals() {
-        Task {
-            let related = DatabaseManager.shared.findRelatedKurals(for: kuralId)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.relatedKurals = related
+        var related: [(Int, [Float])]  = []
+        related = DatabaseManager.shared.singletonDb
+        if !related.isEmpty {
+            self.isLoading = false
+            print("related kurals fetched")
+            Task {
+                let related = DatabaseManager.shared.findRelatedKurals(for: kuralId)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.relatedKurals = related
+                }
             }
+        }else{
+            self.isLoading = true
         }
     }
 }
