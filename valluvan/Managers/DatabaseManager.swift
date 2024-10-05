@@ -622,21 +622,66 @@ public class DatabaseManager {
         let relatedIds = relatedIndices.map { ids[$0] }
         return await fetchRelatedRows(for: relatedIds, language: "English")
     }
+    
     private func generateResponse(query: String, context: String) async -> String {
         let prompt = "Context: \(context)\n\nQuestion: \(query)\nAnswer:"
-        // Call OpenAI's API (assuming you have a method to do this)
+        // Call OpenAI's API
         let response = await callOpenAIChatCompletion(prompt: prompt)
         return response
     }
     
     private func generateEmbedding(for query: String) -> [Float]? {
-        // Implement your logic to generate embedding
+        // Example implementation for generating embeddings
+        let model = "text-embedding-ada-002" // Specify your model here
+        let apiKey = "YOUR_API_KEY" // Replace with your OpenAI API key
+        let url = URL(string: "https://api.openai.com/v1/embeddings")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+
+        let body: [String: Any] = [
+            "model": model,
+            "input": query
+        ]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        // Perform the API call
+        let (data, _) = try! await URLSession.shared.data(for: request)
+        let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+        
+        if let dataArray = json["data"] as? [[String: Any]], let embedding = dataArray.first?["embedding"] as? [Float] {
+            return embedding
+        }
         return nil
     }
 
     // Placeholder for calling OpenAI's API
     private func callOpenAIChatCompletion(prompt: String) async -> String {
-        // Implement your API call logic
+        let apiKey = "YOUR_API_KEY" // Replace with your OpenAI API key
+        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+
+        let body: [String: Any] = [
+            "model": "gpt-4o-mini",
+            "messages": [
+                ["role": "user", "content": prompt]
+            ]
+        ]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        // Perform the API call
+        let (data, _) = try! await URLSession.shared.data(for: request)
+        let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+        
+        if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let content = message["content"] as? String {
+            return content
+        }
         return ""
     }
 
