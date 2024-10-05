@@ -1,6 +1,7 @@
 import Foundation
 import SQLite 
 import UIKit 
+import os
  
 public struct DatabaseSearchResult: Identifiable {
     public let id: Int
@@ -30,8 +31,15 @@ public class DatabaseManager {
     public static let shared = DatabaseManager()
     private var db: Connection?
     public var singletonDb: [Embedding] = []
+    private let apiKey: String
 
     private init() {
+        self.apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"] ?? ""
+        
+        if self.apiKey.isEmpty {
+            os_log("Warning: OPENAI_API_KEY environment variable is not set", log: .default, type: .error)
+        }
+        
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
                 db = try Connection(path) 
@@ -598,7 +606,6 @@ public class DatabaseManager {
 
     private func generateEmbedding(for query: String) async -> [Float]? {
         let model = "text-embedding-ada-002"
-        let apiKey = ""
         let url = URL(string: "https://api.openai.com/v1/embeddings")!
 
         var request = URLRequest(url: url)
@@ -659,7 +666,6 @@ public class DatabaseManager {
     
  
     private func callOpenAIChatCompletion(prompt: String) async -> String {
-        let apiKey = ""
         let url = URL(string: "https://api.openai.com/v1/chat/completions")!
 
         var request = URLRequest(url: url)
