@@ -205,3 +205,51 @@ def update_related_rows():
 
 # Call the function to update related rows
 update_related_rows()  
+
+# Function to fetch relevant documents based on a query
+def retrieve_documents(query, top_n=5):
+    # Fetch all embeddings
+    ids, embeddings = fetch_embeddings()
+    
+    # Generate embedding for the query
+    query_embedding = generate_embedding([query])[0].reshape(1, -1)
+    
+    # Compute cosine similarity
+    similarities = cosine_similarity(query_embedding, embeddings).flatten()
+    
+    # Get the indices of the top_n most similar embeddings
+    related_indices = similarities.argsort()[-top_n:][::-1]
+    
+    # Fetch the related rows
+    related_ids = [ids[i] for i in related_indices]
+    cursor.execute("SELECT efirstline, esecondline, explanation FROM tirukkural WHERE kno IN ({})".format(','.join('?' * len(related_ids))), related_ids)
+    related_rows = cursor.fetchall()
+    
+    return related_rows
+
+# Function to generate a response using OpenAI's API
+def generate_response(query, context):
+    prompt = f"Context: {context}\n\nQuestion: {query}\nAnswer:"
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Use the appropriate model
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response['choices'][0]['message']['content']
+
+# RAG function to combine retrieval and generation
+def rag_system(query):
+    # Retrieve relevant documents
+    documents = retrieve_documents(query)
+    
+    # Combine the context from retrieved documents
+    context = "\n".join([" ".join(doc) for doc in documents])  # Combine efirstline, esecondline, and explanation
+    
+    # Generate a response based on the query and context
+    response = generate_response(query, context)
+    
+    return response
+
+# Example usage
+query = "What is love?"  # Replace with the user's query
+response = rag_system(query)
+print(response)
