@@ -204,7 +204,7 @@ def update_related_rows():
         conn.commit()  # Commit the changes to the database
 
 # Call the function to update related rows
-update_related_rows()  
+# update_related_rows()  
 
 # Function to fetch relevant documents based on a query
 def retrieve_documents(query, top_n=5):
@@ -223,6 +223,7 @@ def retrieve_documents(query, top_n=5):
     # Fetch the related rows
     related_ids = [ids[i] for i in related_indices]
     cursor.execute("SELECT efirstline, esecondline, explanation FROM tirukkural WHERE kno IN ({})".format(','.join('?' * len(related_ids))), related_ids)
+    print(related_ids)
     related_rows = cursor.fetchall()
     
     return related_rows
@@ -231,7 +232,7 @@ def retrieve_documents(query, top_n=5):
 def generate_response(query, context):
     prompt = f"Context: {context}\n\nQuestion: {query}\nAnswer:"
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Use the appropriate model
+        model="gpt-4o-mini",  # Use the appropriate model
         messages=[{"role": "user", "content": prompt}]
     )
     return response['choices'][0]['message']['content']
@@ -250,6 +251,6 @@ def rag_system(query):
     return response
 
 # Example usage
-query = "What is love?"  # Replace with the user's query
+query = "What is marriage's significance on getting wisdom?"  # Replace with the user's query
 response = rag_system(query)
 print(response)
