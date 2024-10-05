@@ -191,13 +191,10 @@ def find_related_rows_from_array(target_id, top_n=5):
     # Get the indices of the top_n most similar embeddings
     related_indices = similarities.argsort()[-top_n-1:-1][::-1]
     
-    # Fetch the related rows
+    # Fetch the related IDs
     related_ids = [ids[i] for i in related_indices]
-    #cursor.execute("SELECT kno, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN ({})".format(','.join('?' * len(related_ids))), related_ids)
-    #related_rows = cursor.fetchall()
     
-    # Return related rows as a list of dictionaries or any other format you prefer
-    return related_ids
+    return related_ids  # Return a simple list of related IDs
 
 # Ensure the related_rows column exists
 # cursor.execute("ALTER TABLE tirukkural ADD COLUMN related_rows TEXT")  # Add this line to create the new column
@@ -206,8 +203,8 @@ def update_related_rows():
     for target_id in range(1, 1331):  # Loop from 1 to 1330
         related_rows_from_array = find_related_rows_from_array(target_id, top_n=5)
         
-        # Convert related rows to a format suitable for storage (e.g., JSON)
-        related_rows_json = json.dumps([related_rows_from_array])
+        # Convert related rows to a simple array format suitable for storage
+        related_rows_json = json.dumps(related_rows_from_array)  # No extra array wrapping
         
         # Update the database with the related rows
         cursor.execute("UPDATE tirukkural SET related_rows = ? WHERE kno = ?", (related_rows_json, target_id))
@@ -215,3 +212,30 @@ def update_related_rows():
 
 # Call the function to update related rows
 # update_related_rows()
+
+
+def flatten_related_rows():
+    # Fetch all rows with related_rows
+    cursor.execute("SELECT kno, related_rows FROM tirukkural WHERE related_rows IS NOT NULL")
+    rows = cursor.fetchall()
+    
+    for row in rows:
+        kno = row[0]
+        related_rows = json.loads(row[1])  # Load the JSON data
+        
+        # Flatten the array if it's nested
+        if isinstance(related_rows, list) and len(related_rows) == 1 and isinstance(related_rows[0], list):
+            related_rows = related_rows[0]  # Extract the inner list
+        
+        # Convert back to JSON
+        related_rows_json = json.dumps(related_rows)
+        
+        # Update the database with the flattened related rows
+        cursor.execute("UPDATE tirukkural SET related_rows = ? WHERE kno = ?", (related_rows_json, kno))
+    
+    conn.commit()  # Commit the changes to the database
+    print("Related rows have been flattened.")
+
+# Call the function to flatten related rows
+flatten_related_rows()
+
