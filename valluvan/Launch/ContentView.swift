@@ -229,15 +229,15 @@ struct ContentView: View {
         isSearchResultsReady = false
         originalSearchText = searchText 
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            let results: [DatabaseSearchResult] 
-            results = self.aiSearchContent() 
+        Task {
+            let results = await self.aiSearchContent() 
             print("results: \(searchText)")
-            if results.count == 0 {
+            if results.isEmpty {
                 DispatchQueue.main.async {
-                    let alert = UIAlertController(title: "No Results", message: "No kural, found for '\(self.originalSearchText)'", preferredStyle: .alert)
+                    let alert = UIAlertController(title: "No Results", message: "No kural found for '\(self.originalSearchText)'", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let rootViewController = windowScene.windows.first?.rootViewController {
                         rootViewController.present(alert, animated: true, completion: nil)
                     }
                 }
@@ -254,8 +254,7 @@ struct ContentView: View {
         }
     }
 
-
-    func aiSearchContent() -> [DatabaseSearchResult] { 
+    func aiSearchContent() async -> [DatabaseSearchResult] { 
         searchQuery = searchText
         searchText = searchText.components(separatedBy: CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ").inverted).joined()
         // Split the search text into words
@@ -263,11 +262,12 @@ struct ContentView: View {
          
         if words.count > 1 {
            let specialWord: String = firstWordsOfTypes(from:searchText)
-            searchQuery = specialWord == "" ? words.shuffled().prefix(min(3, words.count))[0] :specialWord
+            searchQuery = specialWord == "" ? words.shuffled().prefix(min(3, words.count))[0] : specialWord
             print("searchText: \(searchQuery)")
         } else {
             searchText = searchText
         }
+        print(await DatabaseManager.shared.ragSystem(query: "What is marriage's significance on getting wisdom?"))
         print("searchText: \(searchText)")
         if self.selectedLanguage != "Tamil" {  
             let databaseResults = DatabaseManager.shared.searchContent(query: searchQuery, language: selectedLanguage)
@@ -293,7 +293,6 @@ struct ContentView: View {
             }
         } 
     }
-
 
     private func loadFavorites() -> [Favorite] {
         if let data = UserDefaults.standard.data(forKey: "favorites"),

@@ -440,7 +440,6 @@ public class DatabaseManager {
         if let savedData = UserDefaults.standard.data(forKey: "AIsingletonDb"),
            let decodedData = try? JSONDecoder().decode([Embedding].self, from: savedData) {
             self.singletonDb = decodedData
-            print("singletonDb loaded from UserDefaults")
         } else {
             singletonKurals { embeddings in
                 self.singletonDb = embeddings
@@ -590,42 +589,27 @@ public class DatabaseManager {
     }  
     
     public func ragSystem(query: String, topN: Int = 5) async -> String {
-        // Retrieve relevant documents
-        let documents = await retrieveDocuments(query: query, topN: topN) // Marked as async
-        
-        // Combine the context from retrieved documents
+        let documents = await retrieveDocuments(query: query, topN: topN) 
         let context = documents.map { "\($0.content) \($0.explanation)" }.joined(separator: "\n")
-        
-        // Generate a response based on the query and context
-        let response = await generateResponse(query: query, context: context) // Ensure this is awaited
-        
+        print("context: \(context)")
+        let response = await generateResponse(query: query, context: context)         
         return response
     }
 
-    
     private func retrieveDocuments(query: String, topN: Int) async -> [DatabaseSearchResult] {
-        // Fetch all embeddings
-        let (ids, embeddings) = (singletonDb.map { $0.id }, singletonDb.map { $0.values }) // Corrected unpacking
-        
-        // Generate embedding for the query
-        guard let queryEmbedding = generateEmbedding(for: query) else {
+        let (ids, embeddings) = (singletonDb.map { $0.id }, singletonDb.map { $0.values })
+        guard let queryEmbedding = await generateEmbedding(for: query) else {
             return []
         }
-        
-        // Compute cosine similarity
-        let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } // Corrected argument labels
-        
-        // Get the indices of the topN most similar embeddings
+        let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } 
         let relatedIndices = similarities.enumerated().sorted(by: { $0.element > $1.element }).prefix(topN).map { $0.offset }
-        
-        // Fetch the related rows
         let relatedIds = relatedIndices.map { ids[$0] }
+        print("relatedIds: \(relatedIds)")
         return await fetchRelatedRows(for: relatedIds, language: "English")
     }
     
     private func generateResponse(query: String, context: String) async -> String {
         let prompt = "Context: \(context)\n\nQuestion: \(query)\nAnswer:"
-        // Call OpenAI's API
         let response = await callOpenAIChatCompletion(prompt: prompt)
         return response
     }
@@ -646,8 +630,6 @@ public class DatabaseManager {
             "input": query
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        // Perform the API call
         let (data, _) = try! await URLSession.shared.data(for: request)
         let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         
@@ -657,7 +639,6 @@ public class DatabaseManager {
         return nil
     }
 
-    // Placeholder for calling OpenAI's API
     private func callOpenAIChatCompletion(prompt: String) async -> String {
         let apiKey = "YOUR_API_KEY" // Replace with your OpenAI API key
         let url = URL(string: "https://api.openai.com/v1/chat/completions")!
@@ -674,8 +655,6 @@ public class DatabaseManager {
             ]
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        // Perform the API call
         let (data, _) = try! await URLSession.shared.data(for: request)
         let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         
