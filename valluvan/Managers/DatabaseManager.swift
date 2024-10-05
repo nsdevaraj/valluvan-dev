@@ -35,7 +35,7 @@ public class DatabaseManager {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
                 db = try Connection(path) 
-                loadSingletonDb()
+                loadSingletonDb()                
             } else {
                 print("Database file not found in the main bundle.")
                 print("Searched for 'data.sqlite' in: \(Bundle.main.bundlePath)")
@@ -439,7 +439,7 @@ public class DatabaseManager {
     private func loadSingletonDb() {
         if let savedData = UserDefaults.standard.data(forKey: "AIsingletonDb"),
            let decodedData = try? JSONDecoder().decode([Embedding].self, from: savedData) {
-            self.singletonDb = decodedData
+            self.singletonDb = decodedData 
         } else {
             singletonKurals { embeddings in
                 self.singletonDb = embeddings
@@ -588,31 +588,14 @@ public class DatabaseManager {
         return dotProduct / (magnitude1 * magnitude2)
     }  
     
-    public func ragSystem(query: String, topN: Int = 5) async -> String {
+    public func ragSystem(query: String, topN: Int = 5) async -> String { 
         let documents = await retrieveDocuments(query: query, topN: topN) 
-        let context = documents.map { "\($0.content) \($0.explanation)" }.joined(separator: "\n")
+        let context = documents.map { "\($0.content) \($0.explanation)" }.joined(separator: "\n") 
         print("context: \(context)")
         let response = await generateResponse(query: query, context: context)         
         return response
     }
 
-    private func retrieveDocuments(query: String, topN: Int) async -> [DatabaseSearchResult] {
-        let (ids, embeddings) = (singletonDb.map { $0.id }, singletonDb.map { $0.values })
-        guard let queryEmbedding = await generateEmbedding(for: query) else {
-            return []
-        }
-        let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } 
-        let relatedIndices = similarities.enumerated().sorted(by: { $0.element > $1.element }).prefix(topN).map { $0.offset }
-        let relatedIds = relatedIndices.map { ids[$0] }
-        return await fetchRelatedRows(for: relatedIds, language: "English")
-    }
-    
-    private func generateResponse(query: String, context: String) async -> String {
-        let prompt = "Context: \(context)\n\nQuestion: \(query)\nAnswer:"
-        let response = await callOpenAIChatCompletion(prompt: prompt)
-        return response
-    }
-    
     private func generateEmbedding(for query: String) async -> [Float]? {
         let model = "text-embedding-ada-002"
         let apiKey = ""
@@ -627,16 +610,15 @@ public class DatabaseManager {
             "model": model,
             "input": query
         ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body) 
         
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
             let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        
+            
             if let dataArray = json?["data"] as? [Any],
                let firstItem = dataArray.first as? [String: Any],
                let embedding = firstItem["embedding"] as? [Any] {
-                // Convert the embedding array to [Float]
                 return embedding.compactMap { Float("\($0)") }
             } else {
                 print("Failed to parse embedding from JSON response", json ?? "No JSON")
@@ -648,8 +630,36 @@ public class DatabaseManager {
         }
     }
 
+    private func retrieveRelatedDocuments(query: String, topN: Int) async -> [Int] { 
+        let (ids, embeddings) = (singletonDb.map { $0.id }, singletonDb.map { $0.values })
+        guard let queryEmbedding = await generateEmbedding(for: query) else {
+            return []
+        } 
+        let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } 
+        let relatedIndices = similarities.enumerated().sorted(by: { $0.element > $1.element }).prefix(topN).map { $0.offset } 
+        return relatedIndices.map { ids[$0] } 
+    }
+
+    public func searchSentences(query: String, language: String, topN: Int) async -> [DatabaseSearchResult] {
+        let relatedIds = await retrieveRelatedDocuments(query: query, topN: topN)
+        print("relatedIds: \(relatedIds)")
+        return await fetchRelatedRows(for: relatedIds, language: language)
+    }
+    
+    private func retrieveDocuments(query: String, topN: Int) async -> [DatabaseSearchResult] { 
+      let relatedIds = await retrieveRelatedDocuments(query: query, topN: topN)
+        return await fetchRelatedRows(for: relatedIds, language: "English")
+    }
+    
+    private func generateResponse(query: String, context: String) async -> String {
+        let prompt = "Context: \(context)\n\nQuestion: \(query)\nAnswer:" 
+        let response = await callOpenAIChatCompletion(prompt: prompt)
+        return response
+    }
+    
+ 
     private func callOpenAIChatCompletion(prompt: String) async -> String {
-        let apiKey = "YOUR_API_KEY" // Replace with your OpenAI API key
+        let apiKey = ""
         let url = URL(string: "https://api.openai.com/v1/chat/completions")!
 
         var request = URLRequest(url: url)
@@ -663,7 +673,7 @@ public class DatabaseManager {
                 ["role": "user", "content": prompt]
             ]
         ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body) 
         let (data, _) = try! await URLSession.shared.data(for: request)
         let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         

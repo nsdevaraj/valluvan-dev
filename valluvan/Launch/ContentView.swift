@@ -260,14 +260,16 @@ struct ContentView: View {
         // Split the search text into words
         let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
          
+        //print(await DatabaseManager.shared.ragSystem(query: "What is marriage's significance on getting wisdom?"))
         if words.count > 1 {
            let specialWord: String = firstWordsOfTypes(from:searchText)
             searchQuery = specialWord == "" ? words.shuffled().prefix(min(3, words.count))[0] : specialWord
-            print("searchText: \(searchQuery)")
+            print("searchText: \(searchText)")
+            let databaseResults = await DatabaseManager.shared.searchSentences(query: searchText, language: selectedLanguage, topN: 5)
+            return databaseResults
         } else {
             searchText = searchText
         }
-        //print(await DatabaseManager.shared.ragSystem(query: "What is marriage's significance on getting wisdom?"))
         print("searchText: \(searchText)")
         if self.selectedLanguage != "Tamil" {  
             let databaseResults = DatabaseManager.shared.searchContent(query: searchQuery, language: selectedLanguage)
