@@ -18,41 +18,32 @@ cursor = conn.cursor()
 # Ensure the embeddings column exists
 cursor.execute("CREATE TABLE IF NOT EXISTS tirukkural (kno INTEGER PRIMARY KEY, efirstline TEXT, esecondline TEXT, explanation TEXT, embeddings BLOB)")
  
-# Function to generate embeddings
-def generate_embedding(texts, batch_size=32):
+# Function to generate embeddings using OpenAI's API
+def generate_embedding(texts):
     all_embeddings = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i+batch_size]
-        inputs = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, max_length=256)
-        inputs = {k: v.to(device) for k, v in inputs.items()}
-        with torch.no_grad():
-            outputs = model(**inputs)
-        # Check if the model output is as expected
-        if hasattr(outputs, 'last_hidden_state'):
-            embeddings = outputs.last_hidden_state.mean(dim=1).cpu().numpy()
-        else:
-            # Handle other possible output formats
-            embeddings = outputs[0].mean(dim=1).cpu().numpy()
-        all_embeddings.extend(embeddings)
-        # Clear CUDA cache if using GPU
-        if device.type == "cuda":
-            torch.cuda.empty_cache()
+    for text in texts:
+        response = openai.Embedding.create(
+            model="text-embedding-ada-002",  # Use the appropriate model
+            input=text
+        )
+        embedding = response['data'][0]['embedding']
+        all_embeddings.append(np.array(embedding, dtype=np.float32))  # Ensure the embedding is in the correct format
     return all_embeddings
 
 def generate_and_update_embeddings():
     # Load the model and tokenizer
-    #model_name = "sentence-transformers/all-MiniLM-L6-v2"  # A smaller, more efficient model
-    model_name = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name, ignore_mismatched_sizes=True)
+    # Remove the model loading lines since we are using OpenAI API
+    # model_name = "sentence-transformers/all-MiniLM-L6-v2"  # A smaller, more efficient model
+    # tokenizer = AutoTokenizer.from_pretrained(model_name)
+    # model = AutoModel.from_pretrained(model_name, ignore_mismatched_sizes=True)
 
     # Set padding token if not already set
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+    # if tokenizer.pad_token is None:
+    #     tokenizer.pad_token = tokenizer.eos_token
 
     # Move model to GPU if available, otherwise use CPU
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model.to(device)
 
     # Fetch the data you want to embed
     cursor.execute("SELECT kno, efirstline, esecondline, explanation FROM tirukkural WHERE embeddings IS NULL")
@@ -69,9 +60,8 @@ def generate_and_update_embeddings():
         texts = [f"{row[1]} {row[2]} {row[3]}" for row in chunk]
 
         # Generate embeddings in batches
-        batch_size = 32
-        embeddings = generate_embedding(texts, batch_size)
-        
+        embeddings = generate_embedding(texts)  # Call the updated generate_embedding function
+        print(ids)               
         # Update database
         for id, embedding in zip(ids, embeddings):
             cursor.execute("UPDATE tirukkural SET embeddings = ? WHERE kno = ?", (embedding.tobytes(), id))
@@ -237,5 +227,6 @@ def flatten_related_rows():
     print("Related rows have been flattened.")
 
 # Call the function to flatten related rows
-flatten_related_rows()
+# flatten_related_rows()
 
+generate_and_update_embeddings()
