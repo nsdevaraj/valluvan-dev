@@ -6,11 +6,14 @@ import gc
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import json  # Import the json module
+import openai  # Import the OpenAI library
 
+# Set your OpenAI API key
+openai.api_key =
 #python3 -m venv path/to/venv    
 #source path/to/venv/bin/activate
 #sqlite3 data.sqlite "VACUUM;"
-#pip install torch torchvision torchaudio transformers scikit-learn numpy
+#pip install torch torchvision torchaudio transformers scikit-learn numpy openai
 
 conn = sqlite3.connect('data.sqlite')
 cursor = conn.cursor()
