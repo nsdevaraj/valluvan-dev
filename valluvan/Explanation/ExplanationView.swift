@@ -50,8 +50,12 @@ struct ExplanationView: View {
                                         VStack(alignment: .leading) {
                                             Text(kural.heading)
                                                 .font(.headline)
-                                            Text(kural.content)
-                                                .font(.subheadline)
+                                            HStack { 
+                                                Text(String(kural.kuralId))
+                                                    .font(.headline)
+                                                Text(kural.content)
+                                                    .font(.subheadline)
+                                            }.foregroundColor(.gray)
                                             Text(kural.explanation)
                                                 .font(.body)
                                                 .padding(.bottom, 10)
@@ -91,7 +95,7 @@ struct ExplanationView: View {
             }
             .onAppear {
                 viewModel.checkIfFavorite()
-                viewModel.fetchRelatedKurals()
+                viewModel.fetchRelatedKurals(language: selectedLanguage)
             }
             .onDisappear {
                 viewModel.stopSpeech()

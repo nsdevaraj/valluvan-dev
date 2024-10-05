@@ -20,17 +20,22 @@ public struct DatabaseSearchResult: Identifiable {
     }
 }
 
+// New struct to replace the tuple
+public struct Embedding: Codable {
+    let id: Int
+    let values: [Float]
+}
+
 public class DatabaseManager {
     public static let shared = DatabaseManager()
     private var db: Connection?
-    public var singletonDb: [(Int, [Float])] = []
+    public var singletonDb: [Embedding] = []
+
     private init() {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
                 db = try Connection(path)
-                singletonKurals { embeddings in
-                    self.singletonDb = embeddings // Store the result in singletonDb
-                }
+                loadSingletonDb()
             } else {
                 print("Database file not found in the main bundle.")
                 print("Searched for 'data.sqlite' in: \(Bundle.main.bundlePath)")
@@ -49,7 +54,22 @@ public class DatabaseManager {
         }
     }
 
-    
+    private func loadSingletonDb() {
+        if let savedData = UserDefaults.standard.data(forKey: "singletonDb"),
+           let decodedData = try? JSONDecoder().decode([Embedding].self, from: savedData) {
+            self.singletonDb = decodedData
+            print("singletonDb loaded from UserDefaults")
+        } else {
+            singletonKurals { embeddings in
+                self.singletonDb = embeddings
+                if let encodedData = try? JSONEncoder().encode(embeddings) {
+                    UserDefaults.standard.set(encodedData, forKey: "singletonDb")
+                }
+            }
+            print("singletonDb loaded from singletonKurals")
+        } 
+    }
+
     public func getIyals(for pal: String, language: String) async -> [String] {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -450,10 +470,10 @@ public class DatabaseManager {
         return hexStringTofloatArray(cleanedHexString)
     }
 
-    public func singletonKurals(completion: @escaping ([(Int, [Float])]) -> Void) {
+    public func singletonKurals(completion: @escaping ([Embedding]) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
-            var allEmbeddings: [(Int, [Float])] = []
+            var allEmbeddings: [Embedding] = []
             do {
                 let rows = try self.db!.prepare(query)
                 
@@ -463,7 +483,7 @@ public class DatabaseManager {
                         var floatArray: [Float] = []
                         if let embeddingBinding = row[1] { 
                             floatArray = self.processEmbeddingBinding(embeddingBinding) ?? []
-                            allEmbeddings.append((id, floatArray)) 
+                            allEmbeddings.append(Embedding(id: id, values: floatArray))
                         } else {
                             print("Failed to cast row[1] to Binding")
                             return
@@ -473,12 +493,11 @@ public class DatabaseManager {
             } catch {
                 print("Error fetching related kurals: \(error)")
             }        
-            print("allEmbeddings")
             completion(allEmbeddings)
         }
     }
 
-    public func findRelatedKurals(for kuralId: Int, topN: Int = 5) -> [DatabaseSearchResult] { 
+    public func findRelatedKurals(for kuralId: Int, language: String, topN: Int = 5) -> [DatabaseSearchResult] { 
         var relatedKurals: [DatabaseSearchResult] = [] 
         let tirukkuralTable = Table("tirukkural")
         let kuralIdExpr = SQLite.Expression<Int>("kno") 
@@ -501,42 +520,81 @@ public class DatabaseManager {
         } catch {
             print("Error fetching targetEmbedding line: \(error)")
         }
-        
-        // Safely unwrap targetEmbedding
+         
         guard let unwrappedTargetEmbedding = targetEmbedding else {
             print("Target embedding is nil")
-            return [] // Return an empty array if targetEmbedding is nil
+            return [] 
         }
         
         do {
-            let allEmbeddings: [(Int, [Float])] = singletonDb  
-            let similarities = allEmbeddings.map { (id, embedding) -> (Int, Float) in
-                let similarity = cosineSimilarity(v1: unwrappedTargetEmbedding, v2: embedding) 
-                return (id, similarity)
+            let allEmbeddings: [Embedding] = singletonDb  
+            let similarities = allEmbeddings.map { (embedding) -> (Int, Float) in
+                let similarity = cosineSimilarity(v1: unwrappedTargetEmbedding, v2: embedding.values) 
+                return (embedding.id, similarity)
             }
             
             let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
-            let relatedIds = sortedSimilarities.map { $0.0 }
+            var relatedIds = sortedSimilarities.map { $0.0 }
             print(relatedIds, "relatedIds")
-            let relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
-            let relatedRows = try db!.prepare(relatedQuery)
+            relatedIds.remove(at: 0)
             
-            for row in relatedRows {
-                if let kuralIdValue = row[0] as? Int64 {
-                    let result = DatabaseSearchResult(
-                        heading: row[1] as? String ?? "",
-                        subheading: row[2] as? String ?? "",
-                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                        explanation: row[5] as? String ?? "",
-                        kuralId: Int(kuralIdValue) // Convert Int64 to Int
-                    )
-                    relatedKurals.append(result)
-                } else {
-                    print("Kural ID is not of type Int64")
+            var relatedQuery: String
+            if language != "English" && language != "telugu" && language != "hindi" && language != "Tamil" {
+                relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation, \(language) FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"           
+                do {
+                    let rows = try db!.prepare(relatedQuery)
+                    for row in rows {
+                        let result = DatabaseSearchResult(
+                            heading: row[1] as? String ?? "",
+                            subheading: row[2] as? String ?? "",
+                            content: "\(row[6] as? String ?? "")\n\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                            explanation: row[5] as? String ?? "",
+                            kuralId: Int(row[0] as? Int64 ?? 0)
+                        )
+                        relatedKurals.append(result)
+                    }
+                } catch {
+                    print("Error searching content: \(error.localizedDescription)")
+                }    
+            } else if language == "Tamil" {
+                relatedQuery = "SELECT kno, iyal, tchapter, firstline, secondline, manakudavar, parimelazhagar, varadarajanar, kalaignar, salomon, munisamy, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"                
+                do {
+                    let rows = try db!.prepare(relatedQuery)
+                    for row in rows {
+                        let result = DatabaseSearchResult(
+                            heading: row[1] as? String ?? "",
+                            subheading: row[2] as? String ?? "",
+                            content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                            explanation: row[8] as? String ?? "",
+                            kuralId: Int(row[0] as? Int64 ?? 0)
+                        )
+                        relatedKurals.append(result)
+                    }
+                } catch {
+                    print("Error searching Tamil content: \(error.localizedDescription)")
                 }
-            } 
-        } catch {
-            print("Error fetching related kurals: \(error)")
+            } else {
+                if language == "English" { 
+                    relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
+                } else {
+                    relatedQuery = "SELECT kno, heading, chapter, \(language)1, \(language)2, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
+                }
+                do {
+                    let rows = try db!.prepare(relatedQuery)
+                    for row in rows {
+                        let result = DatabaseSearchResult(
+                            heading: row[1] as? String ?? "",
+                            subheading: row[2] as? String ?? "",
+                            content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                            explanation: row[5] as? String ?? "",
+                            kuralId: Int(row[0] as? Int64 ?? 0)
+                        )
+                        relatedKurals.append(result)
+                    }
+                } catch {
+                    print("Error searching content: \(error.localizedDescription)")
+                }
+            }
         }
         
         return relatedKurals

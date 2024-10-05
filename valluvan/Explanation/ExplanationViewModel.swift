@@ -126,19 +126,19 @@ class ExplanationViewModel: ObservableObject {
         """
     }
 
-    func fetchRelatedKurals() {
-        var related: [(Int, [Float])]  = []
+    func fetchRelatedKurals(language: String) {
+        var related: [Embedding] = [] // Update the type to [Embedding]
         related = DatabaseManager.shared.singletonDb
         if !related.isEmpty {
             self.isLoading = false
             print("related kurals fetched")
             Task {
-                let related = DatabaseManager.shared.findRelatedKurals(for: kuralId)
+                let related = DatabaseManager.shared.findRelatedKurals(for: kuralId, language: language)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.relatedKurals = related
                 }
             }
-        }else{
+        } else {
             self.isLoading = true
         }
     }
