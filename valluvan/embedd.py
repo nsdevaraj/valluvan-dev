@@ -9,7 +9,7 @@ import json  # Import the json module
 import openai  # Import the OpenAI library
 
 # Set your OpenAI API key
-openai.api_key =
+# openai.api_key =
 #python3 -m venv path/to/venv    
 #source path/to/venv/bin/activate
 #sqlite3 data.sqlite "VACUUM;"
@@ -172,7 +172,7 @@ def fetch_embeddings_from_array():
 # Function to find related rows based on cosine similarity using embeddings_array
 def find_related_rows_from_array(target_id, top_n=5):
     # Fetch all embeddings from the array column
-    ids, embeddings = fetch_embeddings_from_array()
+    ids, embeddings = fetch_embeddings()
     
     # Find the target embedding
     target_index = ids.index(target_id)
@@ -190,7 +190,7 @@ def find_related_rows_from_array(target_id, top_n=5):
     return related_ids  # Return a simple list of related IDs
 
 # Ensure the related_rows column exists
-# cursor.execute("ALTER TABLE tirukkural ADD COLUMN related_rows TEXT")  # Add this line to create the new column
+# cursor.execute("ALTER TABLE tirukkural ADD COLUMN airelated_rows TEXT")  # Add this line to create the new column
 
 def update_related_rows():
     for target_id in range(1, 1331):  # Loop from 1 to 1330
@@ -200,36 +200,8 @@ def update_related_rows():
         related_rows_json = json.dumps(related_rows_from_array)  # No extra array wrapping
         
         # Update the database with the related rows
-        cursor.execute("UPDATE tirukkural SET related_rows = ? WHERE kno = ?", (related_rows_json, target_id))
+        cursor.execute("UPDATE tirukkural SET airelated_rows = ? WHERE kno = ?", (related_rows_json, target_id))
         conn.commit()  # Commit the changes to the database
 
 # Call the function to update related rows
-# update_related_rows()
-
-
-def flatten_related_rows():
-    # Fetch all rows with related_rows
-    cursor.execute("SELECT kno, related_rows FROM tirukkural WHERE related_rows IS NOT NULL")
-    rows = cursor.fetchall()
-    
-    for row in rows:
-        kno = row[0]
-        related_rows = json.loads(row[1])  # Load the JSON data
-        
-        # Flatten the array if it's nested
-        if isinstance(related_rows, list) and len(related_rows) == 1 and isinstance(related_rows[0], list):
-            related_rows = related_rows[0]  # Extract the inner list
-        
-        # Convert back to JSON
-        related_rows_json = json.dumps(related_rows)
-        
-        # Update the database with the flattened related rows
-        cursor.execute("UPDATE tirukkural SET related_rows = ? WHERE kno = ?", (related_rows_json, kno))
-    
-    conn.commit()  # Commit the changes to the database
-    print("Related rows have been flattened.")
-
-# Call the function to flatten related rows
-# flatten_related_rows()
-
-generate_and_update_embeddings()
+update_related_rows()  
