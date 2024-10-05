@@ -349,7 +349,7 @@ public class DatabaseManager {
         return results
     }
 
-    func getKuralById(_ kuralId: Int, language: String) -> DatabaseSearchResult? {
+    func getKuralById(_ kuralId: Int, language: String) async -> DatabaseSearchResult? { 
         let tirukkuralTable = Table("tirukkural")
         let kuralIdExpr = SQLite.Expression<Int>("kno")
         let headingExpr = SQLite.Expression<String>("heading")
@@ -499,8 +499,7 @@ public class DatabaseManager {
         }
     }
 
-    public func findRelatedKurals(for kuralId: Int, language: String, topN: Int = 5) -> [DatabaseSearchResult] { 
-        var relatedKurals: [DatabaseSearchResult] = [] 
+    public func findRelatedKurals(for kuralId: Int, language: String, topN: Int = 5) async -> [DatabaseSearchResult] { 
         let tirukkuralTable = Table("tirukkural")
         let kuralIdExpr = SQLite.Expression<Int>("kno") 
         let embeddingsExpr = SQLite.Expression<String>("related_rows") 
@@ -515,74 +514,130 @@ public class DatabaseManager {
                 relatedIds = tempString.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.compactMap { Int($0) }
             }
            
-            var relatedQuery: String
-            if language != "English" && language != "telugu" && language != "hindi" && language != "Tamil" {
-                relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation, \(language) FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"           
-                do {
-                    let rows = try db!.prepare(relatedQuery)
-                    for row in rows {
-                        let result = DatabaseSearchResult(
-                            heading: row[1] as? String ?? "",
-                            subheading: row[2] as? String ?? "",
-                            content: "\(row[6] as? String ?? "")\n\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                            explanation: row[5] as? String ?? "",
-                            kuralId: Int(row[0] as? Int64 ?? 0)
-                        )
-                        relatedKurals.append(result)
-                    }
-                } catch {
-                    print("Error searching content: \(error.localizedDescription)")
-                }    
-            } else if language == "Tamil" {
-                relatedQuery = "SELECT kno, iyal, tchapter, firstline, secondline, manakudavar, parimelazhagar, varadarajanar, kalaignar, salomon, munisamy, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"                
-                do {
-                    let rows = try db!.prepare(relatedQuery)
-                    for row in rows {
-                        let result = DatabaseSearchResult(
-                            heading: row[1] as? String ?? "",
-                            subheading: row[2] as? String ?? "",
-                            content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                            explanation: row[8] as? String ?? "",
-                            kuralId: Int(row[0] as? Int64 ?? 0)
-                        )
-                        relatedKurals.append(result)
-                    }
-                } catch {
-                    print("Error searching Tamil content: \(error.localizedDescription)")
-                }
-            } else {
-                if language == "English" { 
-                    relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
-                } else {
-                    relatedQuery = "SELECT kno, heading, chapter, \(language)1, \(language)2, explanation FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"
-                }
-                do {
-                    let rows = try db!.prepare(relatedQuery)
-                    for row in rows {
-                        let result = DatabaseSearchResult(
-                            heading: row[1] as? String ?? "",
-                            subheading: row[2] as? String ?? "",
-                            content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
-                            explanation: row[5] as? String ?? "",
-                            kuralId: Int(row[0] as? Int64 ?? 0)
-                        )
-                        relatedKurals.append(result)
-                    }
-                } catch {
-                    print("Error searching content: \(error.localizedDescription)")
-                }
-            }
         } catch {
             print("Error fetching targetEmbedding line: \(error)")
         }
-        
-        return relatedKurals
+        return await fetchRelatedRows(for: relatedIds, language: language)
     } 
+
+    private func fetchRelatedRows(for ids: [Int], language: String) async -> [DatabaseSearchResult] {
+        var relatedKurals: [DatabaseSearchResult] = [] 
+        var relatedQuery: String
+        if language != "English" && language != "telugu" && language != "hindi" && language != "Tamil" {
+            relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation, \(language) FROM tirukkural WHERE kno IN (\(ids.map { String($0) }.joined(separator: ",")))"
+            do {
+                let rows = try db!.prepare(relatedQuery)
+                for row in rows {
+                    let result = DatabaseSearchResult(
+                        heading: row[1] as? String ?? "",
+                        subheading: row[2] as? String ?? "",
+                        content: "\(row[6] as? String ?? "")\n\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                        explanation: row[5] as? String ?? "",
+                        kuralId: Int(row[0] as? Int64 ?? 0)
+                    )
+                    relatedKurals.append(result)
+                }
+            } catch {
+                print("Error searching content: \(error.localizedDescription)")
+            }    
+        } else if language == "Tamil" {
+            relatedQuery = "SELECT kno, iyal, tchapter, firstline, secondline, manakudavar, parimelazhagar, varadarajanar, kalaignar, salomon, munisamy, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(ids.map { String($0) }.joined(separator: ",")))"                
+            do {
+                let rows = try db!.prepare(relatedQuery)
+                for row in rows {
+                    let result = DatabaseSearchResult(
+                        heading: row[1] as? String ?? "",
+                        subheading: row[2] as? String ?? "",
+                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                        explanation: row[8] as? String ?? "",
+                        kuralId: Int(row[0] as? Int64 ?? 0)
+                    )
+                    relatedKurals.append(result)
+                }
+            } catch {
+                print("Error searching Tamil content: \(error.localizedDescription)")
+            }
+        } else {
+            if language == "English" { 
+                relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN (\(ids.map { String($0) }.joined(separator: ",")))"
+            } else {
+                relatedQuery = "SELECT kno, heading, chapter, \(language)1, \(language)2, explanation FROM tirukkural WHERE kno IN (\(ids.map { String($0) }.joined(separator: ",")))"
+            }
+            do {
+                let rows = try db!.prepare(relatedQuery)
+                for row in rows {
+                    let result = DatabaseSearchResult(
+                        heading: row[1] as? String ?? "",
+                        subheading: row[2] as? String ?? "",
+                        content: "\(row[3] as? String ?? "")\n\(row[4] as? String ?? "")",
+                        explanation: row[5] as? String ?? "",
+                        kuralId: Int(row[0] as? Int64 ?? 0)
+                    )
+                    relatedKurals.append(result)
+                }
+            } catch {
+                print("Error searching content: \(error.localizedDescription)")
+            }
+        }
+        return relatedKurals
+    }
 
     private func cosineSimilarity(v1: [Float], v2: [Float]) -> Float {
         let dotProduct = zip(v1, v2).map(*).reduce(0, +)
         let magnitude1 = sqrt(v1.map { $0 * $0 }.reduce(0, +))
         let magnitude2 = sqrt(v2.map { $0 * $0 }.reduce(0, +))
         return dotProduct / (magnitude1 * magnitude2)
+    }  
+    
+    public func ragSystem(query: String, topN: Int = 5) async -> String {
+        // Retrieve relevant documents
+        let documents = await retrieveDocuments(query: query, topN: topN) // Marked as async
+        
+        // Combine the context from retrieved documents
+        let context = documents.map { "\($0.content) \($0.explanation)" }.joined(separator: "\n")
+        
+        // Generate a response based on the query and context
+        let response = await generateResponse(query: query, context: context) // Ensure this is awaited
+        
+        return response
     }
+
+    
+    private func retrieveDocuments(query: String, topN: Int) async -> [DatabaseSearchResult] {
+        // Fetch all embeddings
+        let (ids, embeddings) = (singletonDb.map { $0.id }, singletonDb.map { $0.values }) // Corrected unpacking
+        
+        // Generate embedding for the query
+        guard let queryEmbedding = generateEmbedding(for: query) else {
+            return []
+        }
+        
+        // Compute cosine similarity
+        let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } // Corrected argument labels
+        
+        // Get the indices of the topN most similar embeddings
+        let relatedIndices = similarities.enumerated().sorted(by: { $0.element > $1.element }).prefix(topN).map { $0.offset }
+        
+        // Fetch the related rows
+        let relatedIds = relatedIndices.map { ids[$0] }
+        return await fetchRelatedRows(for: relatedIds, language: "English")
+    }
+    private func generateResponse(query: String, context: String) async -> String {
+        let prompt = "Context: \(context)\n\nQuestion: \(query)\nAnswer:"
+        // Call OpenAI's API (assuming you have a method to do this)
+        let response = await callOpenAIChatCompletion(prompt: prompt)
+        return response
+    }
+    
+    private func generateEmbedding(for query: String) -> [Float]? {
+        // Implement your logic to generate embedding
+        return nil
+    }
+
+    // Placeholder for calling OpenAI's API
+    private func callOpenAIChatCompletion(prompt: String) async -> String {
+        // Implement your API call logic
+        return ""
+    }
+
 }

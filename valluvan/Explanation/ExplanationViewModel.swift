@@ -127,7 +127,7 @@ class ExplanationViewModel: ObservableObject {
 
     func fetchRelatedKurals(language: String) { 
         Task {
-            let related = DatabaseManager.shared.findRelatedKurals(for: kuralId, language: language)
+            let related = await DatabaseManager.shared.findRelatedKurals(for: kuralId, language: language)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.relatedKurals = related
             }

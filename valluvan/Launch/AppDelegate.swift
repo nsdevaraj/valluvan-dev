@@ -37,16 +37,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         completionHandler()
     }
     
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    private func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) async -> Bool { // Marked as async
         if userActivity.activityType == "com.devois.valluvan.goToKural",
            let kuralId = userActivity.userInfo?["kuralId"] as? Int {
-            DispatchQueue.main.async {
-                // Get the active window scene
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first,
-                   let contentView = window.rootViewController?.view as? ContentView {
-                    contentView.handleSiriGoToKural(kuralId: kuralId)
-                }
+            // Removed DispatchQueue.main.async as it's not needed in async context
+            // Get the active window scene
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let contentView = window.rootViewController?.view as? ContentView {
+                await contentView.handleSiriGoToKural(kuralId: kuralId) // Added await
             }
             return true
         }

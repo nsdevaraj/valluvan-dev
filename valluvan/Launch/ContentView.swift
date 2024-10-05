@@ -138,7 +138,9 @@ struct ContentView: View {
         .sheet(isPresented: $showFavorites, content: favoritesSheet)
         .sheet(isPresented: $showGoToKural, content: goToKuralSheet)
         .sheet(isPresented: $showLanguageSettings, content: languageSettingsSheet)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification), perform: handleNotification)
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { notification in
+            handleNotification(notification) // Call the synchronous version
+        }
         .sheet(isPresented: $showExplanationView, content: explanationViewSheet)
         .task(loadIyalsTask)
     }
@@ -301,9 +303,9 @@ struct ContentView: View {
         return []
     }
 
-    private func goToKural() {
+    private func goToKural() async {
         if let kuralId = Int(goToKuralId), (1...1330).contains(kuralId) {
-            let result = DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage)
+            let result = await DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage)
             if let result = result {
                 selectedSearchResult = DatabaseSearchResult(
                     heading: result.heading,
@@ -360,9 +362,9 @@ struct ContentView: View {
 
     }
 
-    func handleSiriGoToKural(kuralId: Int) {
+    func handleSiriGoToKural(kuralId: Int) async {
         goToKuralId = String(kuralId)
-        goToKural()
+        await goToKural()
     }
 
     @ViewBuilder
@@ -399,8 +401,12 @@ struct ContentView: View {
 
     @ViewBuilder
     private func goToKuralSheet() -> some View {
-        GoToKuralView(isPresented: $showGoToKural, kuralId: $goToKuralId, onSubmit: goToKural)
-            .environmentObject(appState)
+        GoToKuralView(isPresented: $showGoToKural, kuralId: $goToKuralId) {
+            Task {
+                await goToKural()
+            }
+        }
+        .environmentObject(appState)
     }
 
     @ViewBuilder
@@ -448,12 +454,16 @@ struct ContentView: View {
     }
 
     private func handleNotification(_ _: Notification) {
+        // Change this to synchronous
         if let kuralId = notificationKuralId.wrappedValue {
-            if let result = DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
-                selectedSearchResult = result
-                showExplanationView = true
+            // Call the asynchronous function in a synchronous context
+            Task {
+                if let result = await DatabaseManager.shared.getKuralById(kuralId, language: selectedLanguage) {
+                    selectedSearchResult = result
+                    showExplanationView = true
+                }
+                notificationKuralId.wrappedValue = nil
             }
-            notificationKuralId.wrappedValue = nil
         }
     }
 

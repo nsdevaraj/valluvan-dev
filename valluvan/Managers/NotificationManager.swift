@@ -27,14 +27,16 @@ class NotificationManager: ObservableObject {
     func scheduleRandomKuralNotification() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if granted {
-                self.scheduleNotification()
+                Task { // Create a Task to call the async function
+                    await self.scheduleNotification()
+                }
             } else {
                 print("Notification permission denied")
             }
         }
     }
     
-    func scheduleNotification() {
+    func scheduleNotification() async { // Marked as async
         guard AppState().isDailyKuralEnabled else {
             print("Daily Kural notifications are disabled")
             return
@@ -44,7 +46,7 @@ class NotificationManager: ObservableObject {
         content.title = "Daily Thirukkural"
         
         let randomKuralId = Int.random(in: 1...1330)
-        if let kural = DatabaseManager.shared.getKuralById(randomKuralId, language: "English") {
+        if let kural = await DatabaseManager.shared.getKuralById(randomKuralId, language: "English") {
             content.body = "\(randomKuralId). \(kural.content)\n\nTap to read more..."
             content.userInfo = ["kuralId": randomKuralId]
         } else {
@@ -61,10 +63,11 @@ class NotificationManager: ObservableObject {
         
         let request = UNNotificationRequest(identifier: "dailyKural", content: content, trigger: trigger)
         
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling notification: \(error)")
-            }
+        // Use the asynchronous version of the add method
+        do {
+            try await UNUserNotificationCenter.current().add(request) // Await the add method
+        } catch {
+            print("Error scheduling notification: \(error.localizedDescription)") // Improved error message
         }
     }
 
