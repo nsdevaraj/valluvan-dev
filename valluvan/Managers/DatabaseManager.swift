@@ -604,7 +604,6 @@ public class DatabaseManager {
         let similarities = embeddings.map { cosineSimilarity(v1: queryEmbedding, v2: $0) } 
         let relatedIndices = similarities.enumerated().sorted(by: { $0.element > $1.element }).prefix(topN).map { $0.offset }
         let relatedIds = relatedIndices.map { ids[$0] }
-        print("relatedIds: \(relatedIds)")
         return await fetchRelatedRows(for: relatedIds, language: "English")
     }
     
@@ -614,10 +613,9 @@ public class DatabaseManager {
         return response
     }
     
-    private func generateEmbedding(for query: String) -> [Float]? {
-        // Example implementation for generating embeddings
-        let model = "text-embedding-ada-002" // Specify your model here
-        let apiKey = "YOUR_API_KEY" // Replace with your OpenAI API key
+    private func generateEmbedding(for query: String) async -> [Float]? {
+        let model = "text-embedding-ada-002"
+        let apiKey = ""
         let url = URL(string: "https://api.openai.com/v1/embeddings")!
 
         var request = URLRequest(url: url)
@@ -630,13 +628,24 @@ public class DatabaseManager {
             "input": query
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        let (data, _) = try! await URLSession.shared.data(for: request)
-        let json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
         
-        if let dataArray = json["data"] as? [[String: Any]], let embedding = dataArray.first?["embedding"] as? [Float] {
-            return embedding
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        
+            if let dataArray = json?["data"] as? [Any],
+               let firstItem = dataArray.first as? [String: Any],
+               let embedding = firstItem["embedding"] as? [Any] {
+                // Convert the embedding array to [Float]
+                return embedding.compactMap { Float("\($0)") }
+            } else {
+                print("Failed to parse embedding from JSON response", json ?? "No JSON")
+                return nil
+            }
+        } catch {
+            print("Error generating embedding: \(error)")
+            return nil
         }
-        return nil
     }
 
     private func callOpenAIChatCompletion(prompt: String) async -> String {

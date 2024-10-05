@@ -267,7 +267,7 @@ struct ContentView: View {
         } else {
             searchText = searchText
         }
-        print(await DatabaseManager.shared.ragSystem(query: "What is marriage's significance on getting wisdom?"))
+        //print(await DatabaseManager.shared.ragSystem(query: "What is marriage's significance on getting wisdom?"))
         print("searchText: \(searchText)")
         if self.selectedLanguage != "Tamil" {  
             let databaseResults = DatabaseManager.shared.searchContent(query: searchQuery, language: selectedLanguage)
