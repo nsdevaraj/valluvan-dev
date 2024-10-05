@@ -35,6 +35,7 @@ public class DatabaseManager {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
                 db = try Connection(path) 
+                loadSingletonDb()
             } else {
                 print("Database file not found in the main bundle.")
                 print("Searched for 'data.sqlite' in: \(Bundle.main.bundlePath)")
@@ -433,7 +434,70 @@ public class DatabaseManager {
         }  
         return floatArray
     }
-  
+
+
+    private func loadSingletonDb() {
+        if let savedData = UserDefaults.standard.data(forKey: "AIsingletonDb"),
+           let decodedData = try? JSONDecoder().decode([Embedding].self, from: savedData) {
+            self.singletonDb = decodedData
+            print("singletonDb loaded from UserDefaults")
+        } else {
+            singletonKurals { embeddings in
+                self.singletonDb = embeddings
+                if let encodedData = try? JSONEncoder().encode(embeddings) {
+                    UserDefaults.standard.set(encodedData, forKey: "AIsingletonDb")
+                }
+            }
+            print("singletonDb loaded from singletonKurals")
+        } 
+    }
+
+    func processEmbeddingBinding(_ embeddingBinding: Any) -> [Float]? {
+        // Convert the binding to a string representation
+        let hexString = String(describing: embeddingBinding)
+            .replacingOccurrences(of: "Optional(x'", with: "")
+            .replacingOccurrences(of: "')", with: "")
+            .replacingOccurrences(of: " ", with: ""); // Remove any spaces if present
+        
+        // Check if the hex string is valid
+        guard !hexString.isEmpty else {
+            print("Hex string is empty after cleaning")
+            return nil
+        }
+        
+        // Ensure the hex string does not start with 'x'
+        let cleanedHexString = hexString.replacingOccurrences(of: "x", with: "")
+        
+        // Convert hex string to byte array
+        return hexStringTofloatArray(cleanedHexString)
+    }
+
+    public func singletonKurals(completion: @escaping ([Embedding]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
+            var allEmbeddings: [Embedding] = []
+            do {
+                let rows = try self.db!.prepare(query)
+                
+                for row in rows {
+                    if let idValue = row[0] as? Int64 {
+                        let id = Int(idValue)
+                        var floatArray: [Float] = []
+                        if let embeddingBinding = row[1] { 
+                            floatArray = self.processEmbeddingBinding(embeddingBinding) ?? []
+                            allEmbeddings.append(Embedding(id: id, values: floatArray))
+                        } else {
+                            print("Failed to cast row[1] to Binding")
+                            return
+                        }
+                    }
+                } 
+            } catch {
+                print("Error fetching related kurals: \(error)")
+            }        
+            completion(allEmbeddings)
+        }
+    }
 
     public func findRelatedKurals(for kuralId: Int, language: String, topN: Int = 5) -> [DatabaseSearchResult] { 
         var relatedKurals: [DatabaseSearchResult] = [] 
@@ -514,4 +578,11 @@ public class DatabaseManager {
         
         return relatedKurals
     } 
+
+    private func cosineSimilarity(v1: [Float], v2: [Float]) -> Float {
+        let dotProduct = zip(v1, v2).map(*).reduce(0, +)
+        let magnitude1 = sqrt(v1.map { $0 * $0 }.reduce(0, +))
+        let magnitude2 = sqrt(v2.map { $0 * $0 }.reduce(0, +))
+        return dotProduct / (magnitude1 * magnitude2)
+    }
 }
