@@ -9,6 +9,7 @@ import json  # Import the json module
 
 #python3 -m venv path/to/venv    
 #source path/to/venv/bin/activate
+#sqlite3 data.sqlite "VACUUM;"
 #pip install torch torchvision torchaudio transformers scikit-learn numpy
 
 conn = sqlite3.connect('data.sqlite')
@@ -148,7 +149,6 @@ def query_and_find_related(word, top_n=5):
 # related_rows = query_and_find_related(word, top_n=5)
 # for row in related_rows:
 #     print(row)
- 
 
 # Function to update embeddings with new array column
 def update_embeddings_with_array():
@@ -193,13 +193,25 @@ def find_related_rows_from_array(target_id, top_n=5):
     
     # Fetch the related rows
     related_ids = [ids[i] for i in related_indices]
-    cursor.execute("SELECT kno, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN ({})".format(','.join('?' * len(related_ids))), related_ids)
-    related_rows = cursor.fetchall()
+    #cursor.execute("SELECT kno, efirstline, esecondline, explanation FROM tirukkural WHERE kno IN ({})".format(','.join('?' * len(related_ids))), related_ids)
+    #related_rows = cursor.fetchall()
     
-    return related_rows
+    # Return related rows as a list of dictionaries or any other format you prefer
+    return related_ids
 
-# Example usage
-target_id = 1064  # Replace with the ID you want to find related rows for
-related_rows_from_array = find_related_rows_from_array(target_id, top_n=5)
-for row in related_rows_from_array:
-    print(row)
+# Ensure the related_rows column exists
+# cursor.execute("ALTER TABLE tirukkural ADD COLUMN related_rows TEXT")  # Add this line to create the new column
+
+def update_related_rows():
+    for target_id in range(1, 1331):  # Loop from 1 to 1330
+        related_rows_from_array = find_related_rows_from_array(target_id, top_n=5)
+        
+        # Convert related rows to a format suitable for storage (e.g., JSON)
+        related_rows_json = json.dumps([related_rows_from_array])
+        
+        # Update the database with the related rows
+        cursor.execute("UPDATE tirukkural SET related_rows = ? WHERE kno = ?", (related_rows_json, target_id))
+        conn.commit()  # Commit the changes to the database
+
+# Call the function to update related rows
+# update_related_rows()
