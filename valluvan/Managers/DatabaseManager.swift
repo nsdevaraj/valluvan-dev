@@ -34,8 +34,7 @@ public class DatabaseManager {
     private init() {
         do {
             if let path = Bundle.main.path(forResource: "data", ofType: "sqlite") {
-                db = try Connection(path)
-                loadSingletonDb()
+                db = try Connection(path) 
             } else {
                 print("Database file not found in the main bundle.")
                 print("Searched for 'data.sqlite' in: \(Bundle.main.bundlePath)")
@@ -53,22 +52,7 @@ public class DatabaseManager {
             print("Unable to connect to database: \(error)")
         }
     }
-
-    private func loadSingletonDb() {
-        if let savedData = UserDefaults.standard.data(forKey: "singletonDb"),
-           let decodedData = try? JSONDecoder().decode([Embedding].self, from: savedData) {
-            self.singletonDb = decodedData
-            print("singletonDb loaded from UserDefaults")
-        } else {
-            singletonKurals { embeddings in
-                self.singletonDb = embeddings
-                if let encodedData = try? JSONEncoder().encode(embeddings) {
-                    UserDefaults.standard.set(encodedData, forKey: "singletonDb")
-                }
-            }
-            print("singletonDb loaded from singletonKurals")
-        } 
-    }
+ 
 
     public func getIyals(for pal: String, language: String) async -> [String] {
         await withCheckedContinuation { continuation in
@@ -449,95 +433,24 @@ public class DatabaseManager {
         }  
         return floatArray
     }
-
-    func processEmbeddingBinding(_ embeddingBinding: Any) -> [Float]? {
-        // Convert the binding to a string representation
-        let hexString = String(describing: embeddingBinding)
-            .replacingOccurrences(of: "Optional(x'", with: "")
-            .replacingOccurrences(of: "')", with: "")
-            .replacingOccurrences(of: " ", with: ""); // Remove any spaces if present
-        
-        // Check if the hex string is valid
-        guard !hexString.isEmpty else {
-            print("Hex string is empty after cleaning")
-            return nil
-        }
-        
-        // Ensure the hex string does not start with 'x'
-        let cleanedHexString = hexString.replacingOccurrences(of: "x", with: "")
-        
-        // Convert hex string to byte array
-        return hexStringTofloatArray(cleanedHexString)
-    }
-
-    public func singletonKurals(completion: @escaping ([Embedding]) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let query = "SELECT kno, embeddings FROM tirukkural WHERE embeddings IS NOT NULL"
-            var allEmbeddings: [Embedding] = []
-            do {
-                let rows = try self.db!.prepare(query)
-                
-                for row in rows {
-                    if let idValue = row[0] as? Int64 {
-                        let id = Int(idValue)
-                        var floatArray: [Float] = []
-                        if let embeddingBinding = row[1] { 
-                            floatArray = self.processEmbeddingBinding(embeddingBinding) ?? []
-                            allEmbeddings.append(Embedding(id: id, values: floatArray))
-                        } else {
-                            print("Failed to cast row[1] to Binding")
-                            return
-                        }
-                    }
-                } 
-            } catch {
-                print("Error fetching related kurals: \(error)")
-            }        
-            completion(allEmbeddings)
-        }
-    }
+  
 
     public func findRelatedKurals(for kuralId: Int, language: String, topN: Int = 5) -> [DatabaseSearchResult] { 
         var relatedKurals: [DatabaseSearchResult] = [] 
         let tirukkuralTable = Table("tirukkural")
         let kuralIdExpr = SQLite.Expression<Int>("kno") 
-        let embeddingsExpr = SQLite.Expression<Blob>("embeddings") 
-        
-        var targetEmbedding: [Float]? 
+        let embeddingsExpr = SQLite.Expression<String>("related_rows") 
+        var relatedIds: [Int] = []
         do {
             let query = tirukkuralTable
                 .select(kuralIdExpr, embeddingsExpr)    
                 .filter(kuralIdExpr == kuralId) 
 
-            for row in try db!.prepare(query) { 
-                if let embeddingBinding = row[embeddingsExpr] as? Blob { // Ensure embeddingBinding is of type Blob
-                    targetEmbedding = processEmbeddingBinding(embeddingBinding) ?? [] // Unwrap and provide a default value
-                } else {
-                    print("Failed to cast row[1] to Binding")
-                    return []
-                }
-            } 
-        } catch {
-            print("Error fetching targetEmbedding line: \(error)")
-        }
-         
-        guard let unwrappedTargetEmbedding = targetEmbedding else {
-            print("Target embedding is nil")
-            return [] 
-        }
-        
-        do {
-            let allEmbeddings: [Embedding] = singletonDb  
-            let similarities = allEmbeddings.map { (embedding) -> (Int, Float) in
-                let similarity = cosineSimilarity(v1: unwrappedTargetEmbedding, v2: embedding.values) 
-                return (embedding.id, similarity)
+            for row in try db!.prepare(query) {
+                let tempString = row[embeddingsExpr].replacingOccurrences(of: "]", with: "").replacingOccurrences(of: "[", with: "")
+                relatedIds = tempString.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.compactMap { Int($0) }
             }
-            
-            let sortedSimilarities = similarities.sorted { $0.1 > $1.1 }.prefix(topN)
-            var relatedIds = sortedSimilarities.map { $0.0 }
-            print(relatedIds, "relatedIds")
-            relatedIds.remove(at: 0)
-            
+           
             var relatedQuery: String
             if language != "English" && language != "telugu" && language != "hindi" && language != "Tamil" {
                 relatedQuery = "SELECT kno, heading, chapter, efirstline, esecondline, explanation, \(language) FROM tirukkural WHERE kno IN (\(relatedIds.map { String($0) }.joined(separator: ",")))"           
@@ -595,15 +508,10 @@ public class DatabaseManager {
                     print("Error searching content: \(error.localizedDescription)")
                 }
             }
+        } catch {
+            print("Error fetching targetEmbedding line: \(error)")
         }
         
         return relatedKurals
-    }
-    
-    private func cosineSimilarity(v1: [Float], v2: [Float]) -> Float {
-        let dotProduct = zip(v1, v2).map(*).reduce(0, +)
-        let magnitude1 = sqrt(v1.map { $0 * $0 }.reduce(0, +))
-        let magnitude2 = sqrt(v2.map { $0 * $0 }.reduce(0, +))
-        return dotProduct / (magnitude1 * magnitude2)
-    }
+    } 
 }
