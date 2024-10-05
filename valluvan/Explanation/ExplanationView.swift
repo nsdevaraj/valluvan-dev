@@ -40,31 +40,26 @@ struct ExplanationView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         HeaderView(adhigaramId: adhigaramId, adhigaram: adhigaram, kuralId: kuralId, iyal: iyal)
                         LinesView(lines: lines)
-                        ExplanationTextView(selectedLanguage: selectedLanguage, explanation: explanation) 
-                       
-                            if viewModel.isLoading {
-                                ProgressView()
-                            } else { 
-                                DisclosureGroup("Related :") {
-                                    ForEach(viewModel.relatedKurals) { kural in
-                                        VStack(alignment: .leading) {
-                                            Text(kural.heading)
-                                                .font(.headline)
-                                            HStack { 
-                                                Text(String(kural.kuralId))
-                                                    .font(.headline)
-                                                Text(kural.content)
-                                                    .font(.subheadline)
-                                            }.foregroundColor(.gray)
-                                            Text(kural.explanation)
-                                                .font(.body)
-                                                .padding(.bottom, 10)
-                                        }
-                                        .padding()
-                                    }
+                        ExplanationTextView(selectedLanguage: selectedLanguage, explanation: explanation)                         
+                        DisclosureGroup("Related :") {
+                            ForEach(viewModel.relatedKurals) { kural in 
+                                VStack(alignment: .leading) {
+                                    Text(kural.heading)
+                                        .font(.headline)
+                                    HStack { 
+                                        Text(String(kural.kuralId))
+                                            .font(.headline)
+                                        Text(kural.content)
+                                            .font(.subheadline)
+                                    }.foregroundColor(.gray)
+                                    Text(kural.explanation)
+                                        .font(.body)
+                                        .padding(.bottom, 10)
                                 }
-                                .padding()
+                                .padding() 
                             }
+                        }
+                        .padding() 
                     }
                     .padding()
                 }
