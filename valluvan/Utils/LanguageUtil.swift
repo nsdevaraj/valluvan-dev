@@ -56,40 +56,7 @@ struct LanguageUtil {
             return englishTitle[index] // Fallback to English if language is not found
         }
     }
-
-    static func convertTamilToEnglish(tamilText: String) -> String {
-        let tamilArr: [Character] = ["அ", "ஆ", "இ", "ஈ", "உ", "ஊ", "எ", "ஏ", "ஐ", "ஒ", "ஓ", "ஔ", "க", "ங", "ச", "ஜ", "ஞ", "ட", "த", "ந", "ண", "ன", "ப", "ம", "ய", "ர", "ற", "ல", "ள", "ழ", "வ", "ஷ", "ஸ", "ஹ", "ஃ", "ா", "ி", "ீ", "ு", "ூ", "ெ", "ே", "ை", "ொ", "ோ", "ௌ", "்"]
-        let consArr: [Character] = ["க", "ங", "ச", "ஜ", "ஞ", "ட", "த", "ந", "ண", "ன", "ப", "ம", "ய", "ர", "ற", "ல", "ள", "ழ", "வ", "ஷ", "ஸ", "ஹ"]
-        let map: [Character: String] = [
-            "அ": "a", "ஆ": "aa", "இ": "i", "ஈ": "ii", "உ": "u", "ஊ": "uu", "எ": "e", "ஏ": "ee", "ஐ": "ai", "ஒ": "o", "ஓ": "oo", "ஔ": "au", "க": "k", "ங": "ng", "ச": "c", "ஜ": "j", "ஞ": "nj", "ட": "tx", "த": "t", "ந": "nd", "ண": "nx", "ன": "n", "ப": "p", "ம": "m", "ய": "y", "ர": "r", "ற": "rx", "ல": "l", "ள": "lx", "ழ": "zh", "வ": "w", "ஷ": "sx", "ஸ": "s", "ஹ": "h", "ஃ": "f", "ா": "aa", "ி": "i", "ீ": "ii", "ு": "u", "ூ": "uu", "ெ": "e", "ே": "ee", "ை": "ai", "ொ": "o", "ோ": "oo", "ௌ": "au"
-        ]
-        var english = ""
-        let phn = tamilText.unicodeScalars.map { Character($0) }        
-        for i in 0..<phn.count {
-            let char = phn[i]
-            let nextChar = (i + 1 < phn.count) ? phn[i + 1] : " "
-            
-            if char == " " || char == "\t" || char == "\n" {
-                english += " "
-            } else {
-                let isConsonant = consArr.contains(char)
-                let isNextConsonant = consArr.contains(nextChar) || nextChar == " " || nextChar == "\t" || nextChar == "\n"
-                
-                if tamilArr.contains(char) {
-                    if isConsonant && isNextConsonant {
-                        english += (map[char] ?? "") + "a"
-                    } else if char != "்" {
-                        english += map[char] ?? ""
-                    }
-                } else {
-                    english += String(char)
-                }
-            }
-        }
-        print("english: \(english)")
-        return english
-    }
-
+ 
     static func getLanguageCode(language: String) -> String {
         switch language {
         case "Tamil":

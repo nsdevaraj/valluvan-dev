@@ -1,14 +1,25 @@
 import Foundation
 
 class TranslationUtil {
-    static func getTranslation(for word: String, to targetLanguage: String) async throws -> String {
+    static func getTranslation(for word: String, to targetLanguage: String) throws -> String {
       
         let translations: [String: [String: String]] = [
             "English": [
                 "Miscelleanous": "Misc"
             ],
             "Tamil": [
-                "புதல்வரைப் பெறுதல்": "மக்கட்பேறு"
+                "புதல்வரைப் பெறுதல்": "மக்கட்பேறு",
+                "Love and Relationships": "அன்பு, உறவுகள்",
+                "Personal Growth": "தனிப்பட்ட வளர்ச்சி",
+                "Leadership and Success": "தலைமை, வெற்றி",
+                "Philosophy and Nature": "தத்துவம், இயற்கை",
+                "Career and Finance": "தொழில், நிதி",
+                "Health and Wellness": "சுகாதாரம், ஆரோக்கியம்",
+                "Ethics and Morality": "நெறிமுறைகள், அறநெறி",
+                "Religion and Spirituality": "மதம், ஆன்மீகம்",
+                "Politics and Society" : "அரசியல், சமூகம்",
+                "Science and Technology": "அறிவியல், தொழில்நுட்பம்",
+                "Art and Creativity" : "கலை, கலாச்சாரம்",
             ],
             "telugu": [
                 "Preface": "ముందుమాట",
@@ -20,7 +31,18 @@ class TranslationUtil {
                 "Friendship": "స్నేహం",
                 "Miscelleanous": "వివిధ విషయాలు",
                 "Pre-marital love": "వివాహపూర్వ ప్రేమ",
-                "Post-marital love": "వివాహానంతర ప్రేమ"
+                "Post-marital love": "వివాహానంతర ప్రేమ",                
+                "Love and Relationships":"అన్పు, సంబంధాలు",
+                "Personal Growth": "దానిపట్టిన అభివృద్ధి",
+                "Leadership and Success":"తలైమై, విజయం",
+                "Philosophy and Nature": "తత్వం, ప్రకృతి",
+                "Career and Finance": "తొళిల్, నిధి",
+                "Health and Wellness":"సుకాధారం, ఆరోగ్యం",
+                "Ethics and Morality": "నైరూప్యాలు, ఆచారణ",
+                "Religion and Spirituality": "మతం, ఆధ్యాత్మికం",
+                "Politics and Society" : "అరషియల్, సంఘం",
+                "Science and Technology": "అజ్ఞానం, సాంకేతికత",
+                "Art and Creativity" : "కలై, సంస్కృతి",
             ],
             "hindi": [
                 "Preface": "प्रस्तावना",
@@ -32,7 +54,18 @@ class TranslationUtil {
                 "Friendship": "मित्रता",
                 "Miscelleanous": "विविध",
                 "Pre-marital love": "विवाह पूर्व प्रेम",
-                "Post-marital love": "विवाह के बाद का प्रेम"
+                "Post-marital love": "विवाह के बाद का प्रेम",                
+                "Love and Relationships":"प्यार, रिश्ते",
+                "Personal Growth": "व्यक्तिगत विकास",
+                "Leadership and Success":"नेतृत्व, सफलता",
+                "Philosophy and Nature": "दर्शन, प्रकृति",
+                "Career and Finance": "उद्योग, वित्त",
+                "Health and Wellness":"स्वास्थ्य, स्वास्थ्य",
+                "Ethics and Morality": "नैतिकता, नैतिकता",
+                "Religion and Spirituality":"धर्म, अध्यात्म",
+                "Politics and Society" : "राजनीति, समाज",
+                "Science and Technology": "विज्ञान प्रौद्योगिकी",
+                "Art and Creativity" : "कला, संस्कृति"
             ],
             "kannad": [
                 "Preface": "ಮುನ್ನುಡಿ",
@@ -44,7 +77,18 @@ class TranslationUtil {
                 "Friendship": "ಸ್ನೇಹ",
                 "Miscelleanous": "ವಿವಿಧ",
                 "Pre-marital love": "ವಿವಾಹಪೂರ್ವ ಪ್ರೀತಿ",
-                "Post-marital love": "ವಿವಾಹಾನಂತರ ಪ್ರೀತಿ"
+                "Post-marital love": "ವಿವಾಹಾನಂತರ ಪ್ರೀತಿ",
+                "Love and Relationships":"ಪ್ರೀತಿ, ಸಂಬಂಧಗಳು",
+                "Personal Growth": "ವೈಯಕ್ತಿಕ ಅಭಿವೃದ್ಧಿ",
+                "Leadership and Success":"ನಾಯಕತ್ವ, ಯಶಸ್ಸು",
+                "Philosophy and Nature": "ತತ್ವಶಾಸ್ತ್ರ, ಪ್ರಕೃತಿ",
+                "Career and Finance": "ಕೈಗಾರಿಕೆ, ಹಣಕಾಸು",
+                "Health and Wellness":"ಆರೋಗ್ಯ, ಆರೋಗ್ಯ",
+                "Ethics and Morality": "ನೈತಿಕತೆ, ನೈತಿಕತೆ",
+                "Religion and Spirituality":"ಧರ್ಮ, ಆಧ್ಯಾತ್ಮಿಕತೆ",
+                "Politics and Society" : "ರಾಜಕೀಯ, ಸಮಾಜ",
+                "Science and Technology": "ವಿಜ್ಞಾನ, ತಂತ್ರಜ್ಞಾನ",
+                "Art and Creativity" : "ಕಲೆ, ಸಂಸ್ಕೃತಿ"
             ],
             "french": [
                 "Preface": "Préface",
@@ -56,7 +100,18 @@ class TranslationUtil {
                 "Friendship": "Amitié",
                 "Miscelleanous": "Divers",
                 "Pre-marital love": "Amour prénuptial",
-                "Post-marital love": "Amour post-marital"
+                "Post-marital love": "Amour post-marital",
+                 "Love and Relationships":"Amour, Relations",
+                "Personal Growth": "Développement personnel",
+                "Leadership and Success":"Leadership, Succès",
+                "Philosophy and Nature": "Philosophie, Nature",
+                "Career and Finance": "Industrie, Finances",
+                "Health and Wellness":"Santé, Santé",
+                "Ethics and Morality": "Ethique, Moralité",
+                "Religion and Spirituality":"Religion, Spiritualité",
+                "Politics and Society" : "Politique, Société",
+                "Science and Technology": "Sciences, Technologie",
+                "Art and Creativity" : "Arts, Cultures"
             ],
             "arabic": [
                 "Preface": "مقدمة",
@@ -68,7 +123,18 @@ class TranslationUtil {
                 "Friendship": "الصداقة",
                 "Miscelleanous": "متنوع",
                 "Pre-marital love": "الحب قبل الزواج",
-                "Post-marital love": "الحب بعد الزواج"
+                "Post-marital love": "الحب بعد الزواج",
+                "Love and Relationships":"الحب والعلاقات",
+                "Personal Growth": "تنمية الشخصية",
+                "Leadership and Success":"القيادة، النجاح",
+                "Philosophy and Nature": "الفلسفة، الطبيعة",
+                "Career and Finance": "الصناعة والمالية",
+                "Health and Wellness":"الصحة، الصحة",
+                "Ethics and Morality": "الأخلاق والأخلاق",
+                "Religion and Spirituality":"الدين والروحانية",
+                "Politics and Society" : "السياسة والمجتمع",
+                "Science and Technology": "العلوم والتكنولوجيا",
+                "Art and Creativity" : "الفن والثقافة"
             ],
             "chinese": [
                 "Preface": "序言",
@@ -80,7 +146,18 @@ class TranslationUtil {
                 "Friendship": "友谊",
                 "Miscelleanous": "杂项",
                 "Pre-marital love": "婚前恋爱",
-                "Post-marital love": "婚后恋爱"
+                "Post-marital love": "婚后恋爱",                
+                "Love and Relationships":"爱，关系",
+                "Personal Growth": "个人发展",
+                "Leadership and Success":"领导力，成功",
+                "Philosophy and Nature": "哲学，自然",
+                "Career and Finance": "《产业、金融》",
+                "Health and Wellness":"健康，健康",
+                "Ethics and Morality": "伦理、道德",
+                "Religion and Spirituality":"宗教、灵性",
+                "Politics and Society" : "《政治、社会》",
+                "Science and Technology": "科学、技术",
+                "Art and Creativity" : "艺术、文化"
             ],
             "german": [
                 "Preface": "Vorwort",
@@ -92,7 +169,18 @@ class TranslationUtil {
                 "Friendship": "Freundschaft",
                 "Miscelleanous": "Verschiedenes",
                 "Pre-marital love": "Voreheliche Liebe",
-                "Post-marital love": "Nacheheliche Liebe"
+                "Post-marital love": "Nacheheliche Liebe",
+                "Love and Relationships": "Liebe, Beziehungen",
+                "Personal Growth": "Persönliche Entwicklung",
+                "Leadership and Success":"Führung, Erfolg",
+                "Philosophy and Nature": "Philosophie, Natur",
+                "Career and Finance": "Industrie, Finanzen",
+                "Health and Wellness":"Gesundheit, Gesundheit",
+                "Ethics and Morality": "Ethik, Moral",
+                "Religion and Spirituality":"Religion, Spiritualität",
+                "Politics and Society" : "Politik, Gesellschaft",
+                "Science and Technology": "Wissenschaft, Technologie",
+                "Art and Creativity" : "Kunst, Kultur"
             ],
             "korean": [
                 "Preface": "서문",
@@ -104,7 +192,18 @@ class TranslationUtil {
                 "Friendship": "우정",
                 "Miscelleanous": "기타",
                 "Pre-marital love": "혼전 사랑",
-                "Post-marital love": "혼후 사랑"
+                "Post-marital love": "혼후 사랑",                
+                "Love and Relationships":"사랑, 관계",
+                "Personal Growth": "개인 개발",
+                "Leadership and Success":"리더십, 성공",
+                "Philosophy and Nature": "철학, 자연",
+                "Career and Finance": "산업, 금융",
+                "Health and Wellness":"건강, 건강",
+                "Ethics and Morality": "윤리, 도덕",
+                "Religion and Spirituality": "종교, 영성",
+                "Politics and Society" : "정치, 사회",
+                "Science and Technology": "과학, 기술",
+                "Art and Creativity" : "예술, 문화"
             ],
             "malay": [
                 "Preface": "Prakata",
@@ -116,7 +215,18 @@ class TranslationUtil {
                 "Friendship": "Persahabatan",
                 "Miscelleanous": "Pelbagai",
                 "Pre-marital love": "Cinta Pra Perkahwinan",
-                "Post-marital love": "Cinta Pasca Perkahwinan"
+                "Post-marital love": "Cinta Pasca Perkahwinan",
+                "Love and Relationships":"Cinta, Hubungan",
+                "Personal Growth": "Pembangunan Diri",
+                "Leadership and Success":"Kepimpinan, Kejayaan",
+                "Philosophy and Nature": "Falsafah, Alam Semula Jadi",
+                "Career and Finance": "Industri, Kewangan",
+                "Health and Wellness":"Kesihatan, Kesihatan",
+                "Ethics and Morality": "Etika, Moral",
+                "Religion and Spirituality": "Agama, Kerohanian",
+                "Politics and Society" : "Politik, Masyarakat",
+                "Science and Technology": "Sains, Teknologi",
+                "Art and Creativity" :  "Seni, Budaya"
             ],
             "malayalam": [
                 "Preface": "ആമുഖം",
@@ -128,7 +238,18 @@ class TranslationUtil {
                 "Friendship": "സൗഹൃദം",
                 "Miscelleanous": "പലവക",
                 "Pre-marital love": "വിവാഹപൂർവ്വ പ്രണയം",
-                "Post-marital love": "വിവാഹാനന്തര പ്രണയം"
+                "Post-marital love": "വിവാഹാനന്തര പ്രണയം",
+                "Love and Relationships":"സ്നേഹം, ബന്ധങ്ങൾ",
+                "Personal Growth": "വ്യക്തിഗത വികസനം",
+                "Leadership and Success":"നേതൃത്വം, വിജയം",
+                "Philosophy and Nature": "തത്ത്വചിന്ത, പ്രകൃതി",
+                "Career and Finance": "വ്യവസായം, ധനകാര്യം",
+                "Health and Wellness":"ആരോഗ്യം, ആരോഗ്യം",
+                "Ethics and Morality": "ധാർമ്മികത, ധാർമ്മികത",
+                "Religion and Spirituality": "മതം, ആത്മീയത",
+                "Politics and Society" : "രാഷ്ട്രീയം, സമൂഹം",
+                "Science and Technology": "ശാസ്ത്രം, സാങ്കേതികവിദ്യ",
+                "Art and Creativity" : "കല, സംസ്കാരം"
             ],
             "polish": [
                 "Preface": "Przedmowa",
@@ -140,7 +261,18 @@ class TranslationUtil {
                 "Friendship": "Przyjaźń",
                 "Miscelleanous": "Różne",
                 "Pre-marital love": "Miłość przedmałżeńska",
-                "Post-marital love": "Miłość pomałżeńska"
+                "Post-marital love": "Miłość pomałżeńska",
+                "Love and Relationships":"Miłość, Związki",
+                "Personal Growth": "Rozwój Osobisty",
+                "Leadership and Success":"Przywództwo, Sukces",
+                "Philosophy and Nature": "Filozofia, Natura",
+                "Career and Finance": "Przemysł, Finanse",
+                "Health and Wellness":"Zdrowie, zdrowie",
+                "Ethics and Morality": "Etyka, Moralność",
+                "Religion and Spirituality": "Religia, duchowość",
+                "Politics and Society" : "Polityka, Społeczeństwo",
+                "Science and Technology": "Nauka, Technologia",
+                "Art and Creativity" : "Sztuka, kultura"
             ],
             "russian": [
                 "Preface": "Предисловие",
@@ -152,7 +284,18 @@ class TranslationUtil {
                 "Friendship": "Дружба",
                 "Miscelleanous": "Разное",
                 "Pre-marital love": "Добрачная любовь",
-                "Post-marital love": "Послебрачная любовь"
+                "Post-marital love": "Послебрачная любовь",
+                "Love and Relationships":"Любовь, Отношения",
+                "Personal Growth": "Личностное развитие",
+                "Leadership and Success":"Лидерство, Успех",
+                "Philosophy and Nature": "Философия, Природа",
+                "Career and Finance": "Промышленность, Финансы",
+                "Health and Wellness":"Здоровье, здоровье",
+                "Ethics and Morality": "Этика, мораль",
+                "Religion and Spirituality": "Религия, Духовность",
+                "Politics and Society" : "Политика, Общество",
+                "Science and Technology": "Наука, технологии",
+                "Art and Creativity" :  "Искусство, Культура"
             ],
             "singalam": [
                 "Preface": "පෙරවදන",
@@ -164,7 +307,18 @@ class TranslationUtil {
                 "Friendship": "මිත්රත්වය",
                 "Miscelleanous": "විවිධ",
                 "Pre-marital love": "විවාහයට පෙර ආදරය",
-                "Post-marital love": "විවාහයෙන් පසු ආදරය"
+                "Post-marital love": "විවාහයෙන් පසු ආදරය",
+                "Love and Relationships":"අන්පු, සබඳතා",
+                "Personal Growth": "තනිවූ වර්ධනය",
+                "Leadership and Success":"තලයිමයි, ජය",
+                "Philosophy and Nature": "තත්වය, ස්වභාවික",
+                "Career and Finance": "තොල්, නිති",
+                "Health and Wellness":"සුගාදරම්, සෞඛ්‍යය",
+                "Ethics and Morality": "නීතිවිද්‍යා, ආරණේ",
+                "Religion and Spirituality": "මතම්, අධ්‍යාත්මික",
+                "Politics and Society" : "අරසික, සමාජය",
+                "Science and Technology": "අඥාන, තාක්ෂණය",
+                "Art and Creativity" : "කලයි, සංස්කෘතිය"
             ],
             "swedish": [
                 "Preface": "Förord",
@@ -176,7 +330,18 @@ class TranslationUtil {
                 "Friendship": "Vänskap",
                 "Miscelleanous": "Diverse",
                 "Pre-marital love": "Kärlek före äktenskapet",
-                "Post-marital love": "Kärlek efter äktenskapet"
+                "Post-marital love": "Kärlek efter äktenskapet",                
+                "Love and Relationships":"Kärlek, relationer",
+                "Personal Growth": "Personlig utveckling",
+                "Leadership and Success":"Ledarskap, framgång",
+                "Philosophy and Nature": "Filosofi, natur",
+                "Career and Finance": "Industri, finans",
+                "Health and Wellness":"Hälsa, hälsa",
+                "Ethics and Morality": "Etik, moral",
+                "Religion and Spirituality":"Religion, andlighet",
+                "Politics and Society" : "Politik, samhälle",
+                "Science and Technology": "Vetenskap, teknik",
+                "Art and Creativity" : "Konst, kultur"
             ]
         ]
         

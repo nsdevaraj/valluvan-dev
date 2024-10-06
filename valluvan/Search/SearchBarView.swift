@@ -135,7 +135,7 @@ struct SearchBarView: View {
             }
         }) {
             HStack {
-                Text(category)
+                Text(try! TranslationUtil.getTranslation(for: category, to: selectedLanguage) )
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
@@ -150,7 +150,7 @@ struct SearchBarView: View {
     
     private func categoryOptions(for category: String) -> some View {
         ForEach(defaultSearchOptions[category]!, id: \.0) { option in
-            Button(action: {
+            Button(action: { 
                 searchText = option.0
                 Task {
                     let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: selectedLanguage)

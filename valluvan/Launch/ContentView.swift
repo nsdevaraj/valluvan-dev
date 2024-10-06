@@ -346,7 +346,7 @@ struct ContentView: View {
         Task {
             for iyal in iyals {
                 do {
-                    let translated = try await TranslationUtil.getTranslation(for: iyal, to: selectedLanguage)
+                    let translated = try TranslationUtil.getTranslation(for: iyal, to: selectedLanguage)
                     DispatchQueue.main.async { self.translatedIyals[iyal] = translated }
                 } catch {
                     print("Error translating iyal: \(error)")
