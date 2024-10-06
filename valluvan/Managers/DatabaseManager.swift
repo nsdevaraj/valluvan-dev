@@ -527,7 +527,7 @@ public class DatabaseManager {
         return await fetchRelatedRows(for: relatedIds, language: language)
     } 
 
-    private func fetchRelatedRows(for ids: [Int], language: String) async -> [DatabaseSearchResult] {
+    public func fetchRelatedRows(for ids: [Int], language: String) async -> [DatabaseSearchResult] {
         var relatedKurals: [DatabaseSearchResult] = [] 
         var relatedQuery: String
         if language != "English" && language != "telugu" && language != "hindi" && language != "Tamil" {
