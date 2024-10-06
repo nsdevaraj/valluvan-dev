@@ -9,7 +9,7 @@ struct SearchResultsView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Search Results for \"\(originalSearchText)\"")
+                Text("Results for \"\(originalSearchText)\"")
                 List {
                     ForEach(results.indices, id: \.self) { index in
                         let result = results[index]

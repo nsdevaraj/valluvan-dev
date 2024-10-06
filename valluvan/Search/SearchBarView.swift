@@ -6,7 +6,8 @@ struct SearchBarView: View {
     @Binding var searchResults: [DatabaseSearchResult]
     @Binding var isShowingSearchResults: Bool
     var performSearch: () -> Void
-    @Binding var selectedLanguage: String // Add this line
+    @Binding var selectedLanguage: String
+    @Binding var originalSearchText: String
     
     @State private var expandedCategory: String?
     @State private var showSuggestedSearches: Bool = false
@@ -153,6 +154,7 @@ struct SearchBarView: View {
                 searchText = option.0
                 Task {
                     let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: selectedLanguage)
+                    originalSearchText = searchText
                     searchResults = databaseResults
                     isShowingSearchResults = true
                 }

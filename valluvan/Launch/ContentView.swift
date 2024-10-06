@@ -65,7 +65,7 @@ struct ContentView: View {
     @State private var shouldNavigateToContentView = false
 
     @State private var isSearchResultsReady = false
-    @State private var originalSearchText = ""
+    @State public var originalSearchText = ""
 
     init() {
         // Initialize selectedPal with the first pal title
@@ -97,7 +97,8 @@ struct ContentView: View {
                         searchResults: $searchResults,
                         isShowingSearchResults: $isShowingSearchResults,
                         performSearch: performSearch,
-                        selectedLanguage: $selectedLanguage
+                        selectedLanguage: $selectedLanguage,
+                        originalSearchText: $originalSearchText
                     )
                     
                     Divider()
@@ -468,7 +469,7 @@ struct ContentView: View {
             }
         }
     }
-
+    @Sendable
     private func loadIyalsTask() async {
         iyals = await DatabaseManager.shared.getIyals(for: selectedPal, language: selectedLanguage)
     }
