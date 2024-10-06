@@ -151,7 +151,7 @@ struct SearchBarView: View {
             Button(action: {
                 searchText = option.0
                 Task {
-                    let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: "Tamil")
+                    let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: selectedLanguage)
                     searchResults = databaseResults
                     isShowingSearchResults = true
                 }
