@@ -125,10 +125,13 @@ struct SearchBarView: View {
                                 if expandedCategory == category {
                                     ForEach(defaultSearchOptions[category]!, id: \.self) { option in
                                         Button(action: {
-                                            searchText = option[0] 
-                                            let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option[1], language: "Tamil")
-                                            searchResults = databaseResults
-                                            isShowingSearchResults = true
+                                            searchText = option.0
+                                            // Wrap the asynchronous call in a Task to simplify the closure
+                                            Task {
+                                                let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: "Tamil")
+                                                searchResults = databaseResults
+                                                isShowingSearchResults = true
+                                            }
                                         }) {
                                             Text(option)
                                                 .foregroundColor(.primary)
