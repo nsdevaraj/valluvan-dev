@@ -257,8 +257,7 @@ struct ContentView: View {
     }
 
     func aiSearchContent() async -> [DatabaseSearchResult] { 
-        searchQuery = searchText
-        searchText = searchText.components(separatedBy: CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ").inverted).joined()
+        searchQuery = searchText 
         // Split the search text into words
         let words = searchText.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
          

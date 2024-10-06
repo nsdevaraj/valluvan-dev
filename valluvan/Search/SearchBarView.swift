@@ -14,25 +14,23 @@ struct SearchBarView: View {
 
     let defaultSearchOptions: [String: [(String, [Int])]] = [
         "Love and Relationships": [
-            ("How does Thirukural define true love and relationships ?", [76, 71, 1109, 1192, 74]),
+            ("How does Thirukural define true love and relationships?", [76, 71, 1109, 1192, 74]),
             ("What are Thirukural's views on the role of women in society?", [58, 907, 910, 57, 909]),
             ("How does Thirukural address the theme of love and its relationship to human emotions?", [111, 79, 80, 1192, 1196])
         ],
         "Personal Growth": [
-            ("What advice does Thirukural offer for overcoming adversity ?", [622, 611, 414, 625, 538]),
+            ("What advice does Thirukural offer for overcoming adversity?", [622, 611, 414, 625, 538]),
             ("What lessons does Thirukural offer on the importance of humility?", [985, 125, 963, 978, 95]),
             ("How does Thirukural address the theme of knowledge and its pursuit?", [358, 717, 175, 354, 134])
         ],
         "Leadership and Success": [
-            ("Can you provide Thirukural's insights on effective leadership ?", [382, 445, 513, 634, 648]),
-            ("What lessons does Thirukural offer on handling success and failure ?", [662, 372, 371, 461, 435]),
+            ("Can you provide Thirukural's insights on effective leadership?", [382, 445, 513, 634, 648]),
+            ("What lessons does Thirukural offer on handling success and failure?", [662, 372, 371, 461, 435]),
             ("What are Thirukural's views on the balance between action and contemplation?", [461, 485, 118, 676, 484])
         ],
         "Philosophy and Nature": [
             ("How does Thirukural address the theme of time and its management?", [334, 484, 333, 337, 712]),
-            ("Can you explain Thirukural's perspective on the relationship between humans and nature?", [542, 374, 1323, 149, 898]),
-            ("How does Thirukural address the theme of health and its importance?", [946, 949, 987, 217, 330]),
-            ("What lessons does Thirukural offer on the balance between work and rest?", [612, 617, 611, 118, 1065])
+            ("Can you explain Thirukural's perspective on the relationship between humans and nature?", [542, 374, 1323, 149, 898])
         ],
         "Career and Finance": [
             ("What advice does Thirukural offer for managing finances?", [333, 512, 657, 478, 408]),
@@ -151,7 +149,7 @@ struct SearchBarView: View {
     private func categoryOptions(for category: String) -> some View {
         ForEach(defaultSearchOptions[category]!, id: \.0) { option in
             Button(action: { 
-                searchText = option.0
+                searchText = try! TranslationUtil.getTranslation(for: option.0, to: selectedLanguage)
                 Task {
                     let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: selectedLanguage)
                     originalSearchText = searchText
@@ -159,7 +157,7 @@ struct SearchBarView: View {
                     isShowingSearchResults = true
                 }
             }) {
-                Text(option.0)
+                Text(try! TranslationUtil.getTranslation(for: option.0, to: selectedLanguage))
                     .foregroundColor(.primary)
                     .padding(.horizontal)
                     .padding(.vertical, 5)
