@@ -65,89 +65,104 @@ struct SearchBarView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                TextField("AI Search", text: $searchText, onCommit: performSearch)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-                
-                Button(action: {
-                    showSuggestedSearches.toggle() 
-                }) {
-                    Image(systemName: showSuggestedSearches ? "chevron.up" : "chevron.down")
-                }
-                .padding(.trailing)
-                
-                if !searchText.isEmpty {
-                    Button(action: {
-                        searchText = ""
-                        isShowingSearchResults = false
-                        showSuggestedSearches = false
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .padding(.trailing)
-                }
-            }
+            searchBar
             
             if isSearching {
                 ProgressView()
-            } else if searchText.isEmpty && !isShowingSearchResults && showSuggestedSearches {  
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Suggested searches:")
-                            .font(.headline)
-                            .padding(.horizontal)
-                        
-                        ForEach(Array(defaultSearchOptions.keys), id: \.self) { category in
-                            VStack(alignment: .leading) {
-                                Button(action: {
-                                    withAnimation {
-                                        if expandedCategory == category {
-                                            expandedCategory = nil
-                                        } else {
-                                            expandedCategory = category
-                                        }
-                                    }
-                                }) {
-                                    HStack {
-                                        Text(category)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                        Spacer()
-                                        Image(systemName: expandedCategory == category ? "chevron.up" : "chevron.down")
-                                    }
-                                }
-                                .padding(.horizontal)
-                                .padding(.vertical, 5)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(8)
-                                
-                                if expandedCategory == category {
-                                    ForEach(defaultSearchOptions[category]!, id: \.self) { option in
-                                        Button(action: {
-                                            searchText = option.0
-                                            // Wrap the asynchronous call in a Task to simplify the closure
-                                            Task {
-                                                let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: "Tamil")
-                                                searchResults = databaseResults
-                                                isShowingSearchResults = true
-                                            }
-                                        }) {
-                                            Text(option)
-                                                .foregroundColor(.primary)
-                                                .padding(.horizontal)
-                                                .padding(.vertical, 5)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                    .transition(.opacity)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.vertical)
-                }
+            } else if searchText.isEmpty && !isShowingSearchResults && showSuggestedSearches {
+                suggestedSearchesView
             }
         }
+    }
+    
+    private var searchBar: some View {
+        HStack {
+            TextField("AI Search", text: $searchText, onCommit: performSearch)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+            
+            Button(action: {
+                showSuggestedSearches.toggle() 
+            }) {
+                Image(systemName: showSuggestedSearches ? "chevron.up" : "chevron.down")
+            }
+            .padding(.trailing)
+            
+            if !searchText.isEmpty {
+                Button(action: {
+                    searchText = ""
+                    isShowingSearchResults = false
+                    showSuggestedSearches = false
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .padding(.trailing)
+            }
+        }
+    }
+    
+    private var suggestedSearchesView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Suggested searches:")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                ForEach(Array(defaultSearchOptions.keys), id: \.self) { category in
+                    categoryView(for: category)
+                }
+            }
+            .padding(.vertical)
+        }
+    }
+    
+    private func categoryView(for category: String) -> some View {
+        VStack(alignment: .leading) {
+            categoryHeader(category)
+            
+            if expandedCategory == category {
+                categoryOptions(for: category)
+            }
+        }
+    }
+    
+    private func categoryHeader(_ category: String) -> some View {
+        Button(action: {
+            withAnimation {
+                expandedCategory = (expandedCategory == category) ? nil : category
+            }
+        }) {
+            HStack {
+                Text(category)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Spacer()
+                Image(systemName: expandedCategory == category ? "chevron.up" : "chevron.down")
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 5)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+    
+    private func categoryOptions(for category: String) -> some View {
+        ForEach(defaultSearchOptions[category]!, id: \.0) { option in
+            Button(action: {
+                searchText = option.0
+                Task {
+                    let databaseResults = await DatabaseManager.shared.fetchRelatedRows(for: option.1, language: "Tamil")
+                    searchResults = databaseResults
+                    isShowingSearchResults = true
+                }
+            }) {
+                Text(option.0)
+                    .foregroundColor(.primary)
+                    .padding(.horizontal)
+                    .padding(.vertical, 5)
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+        .transition(.opacity)
     }
 }
