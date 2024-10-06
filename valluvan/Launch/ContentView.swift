@@ -97,7 +97,7 @@ struct ContentView: View {
                         searchResults: $searchResults,
                         isShowingSearchResults: $isShowingSearchResults,
                         performSearch: performSearch,
-                        selectedLanguage: $selectedLanguage // Add this line
+                        selectedLanguage: $selectedLanguage
                     )
                     
                     Divider()

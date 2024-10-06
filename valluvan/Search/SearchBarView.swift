@@ -6,9 +6,10 @@ struct SearchBarView: View {
     @Binding var searchResults: [DatabaseSearchResult]
     @Binding var isShowingSearchResults: Bool
     var performSearch: () -> Void
+    @Binding var selectedLanguage: String // Add this line
     
     @State private var expandedCategory: String?
-    @State private var showSuggestedSearches: Bool = false // New state variable
+    @State private var showSuggestedSearches: Bool = false
 
     let defaultSearchOptions: [String: [(String, [Int])]] = [
         "Love and Relationships": [
